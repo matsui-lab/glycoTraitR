@@ -1,0 +1,157 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+library(readr)
+glycanDatabase <- read_csv("data/glycanDatabase.csv", show_col_types = FALSE)
+```
+
+```{r}
+wurcs <- glycanDatabase$StructureInformation[1000]
+wurcs
+```
+
+```{r}
+library(stringr)
+library(purrr)
+library(dplyr)
+library(stringr)
+library(dplyr)
+library(purrr)
+
+analyze_wurcs_structure <- function(wurcs) {
+  # --- 提取 MS 区块 ---
+  ms_strs <- str_match_all(wurcs, "\\[([^\\]]+)\\]")[[1]][,2]
+
+  parse_ms <- function(ms) {
+    list(
+      anomer = str_sub(ms, 1, 1),
+      stereo = str_sub(ms, 2, 5),
+      super = str_match(ms, "([a-z])-[0-9]")[,2],
+      mod = str_extract(ms, "_\\d+\\*[^_/]+"),
+      full = ms
+    )
+  }
+  ms_df <- map_dfr(ms_strs, parse_ms)
+  ms_df <- ms_df %>% mutate(idx = row_number())
+
+  # --- residue 分布序列 ---
+  res_idx <- str_match(wurcs, "/(\\d+(?:-\\d+)*)/")[,2] %>%
+    str_split("-") %>% .[[1]] %>% as.integer()
+  res_df <- tibble(label = letters[1:length(res_idx)],
+                   idx = res_idx,
+                   ms = ms_strs[res_idx])
+
+  # --- linkage 解析 ---
+  link_str <- str_match(wurcs, "/[^/]+/([^/]+)$")[,2]
+  links <- str_split(link_str, "_")[[1]]
+  link_df <- tibble(
+    from = str_sub(links, 1, 1),
+    from_pos = as.integer(str_sub(links, 2, 2)),
+    to = str_sub(links, 4, 4),
+    to_pos = as.integer(str_sub(links, 5, 5))
+  )
+
+  # --- residue 标注 +连接 ---
+  full_df <- res_df %>%
+    left_join(ms_df, by = "idx") %>%
+    rename(residue = label)
+
+  # --- 各类统计 ---
+  n_fuc <- full_df %>% filter(super == "m") %>% nrow()
+  n_sia <- full_df %>% filter(super == "n") %>% nrow()
+  n_man <- full_df %>% filter(str_starts(full, "a1122h") | str_starts(full, "b1122h")) %>% nrow()
+  n_hexnac <- full_df %>% filter(str_detect(mod, "NCC")) %>% nrow()
+
+  # 构建出度表估算天线
+  deg <- table(c(link_df$from, link_df$to))
+  n_antennas <- sum(deg == 1)
+
+  # 核心 Fuc：α1-6 接主干
+  core_fuc <- link_df %>%
+    filter(from_pos == 6) %>%
+    inner_join(full_df, by = c("from" = "residue")) %>%
+    filter(super == "m") %>% nrow()
+
+  # 天线 Fuc（非核心）
+  antenna_fuc <- full_df %>% filter(super == "m") %>% nrow() - core_fuc
+
+  # α2-3 / α2-6 SialicAcid
+  alpha23 <- link_df %>%
+    filter(from_pos == 2, to_pos == 3) %>%
+    inner_join(full_df, by = c("from" = "residue")) %>%
+    filter(super == "n") %>% nrow()
+
+  alpha26 <- link_df %>%
+    filter(from_pos == 2, to_pos == 6) %>%
+    inner_join(full_df, by = c("from" = "residue")) %>%
+    filter(super == "n") %>% nrow()
+
+  # 粗略结构类型判断
+  is_highmannose <- n_man >= 5 && n_hexnac <= 2
+  is_complex <- n_hexnac >= 3 && n_antennas >= 2
+  is_hybrid <- !is_highmannose && n_man > 0 && is_complex
+  is_polylacnac <- FALSE  # 简化实现，建议用 motif 检测进一步实现
+
+  return(list(
+    number_of_fucoses = n_fuc,
+    number_of_sialic_acids = n_sia,
+    number_of_mannoses = n_man,
+    number_of_hexnac = n_hexnac,
+    number_of_antennas = n_antennas,
+    number_of_core_fucoses = core_fuc,
+    number_of_antenna_fucoses = antenna_fuc,
+    number_of_alpha_2_3_sialic_acids = alpha23,
+    number_of_alpha_2_6_sialic_acids = alpha26,
+    is_poly_lacnac = is_polylacnac,
+    is_complex = is_complex,
+    is_hybrid = is_hybrid,
+    is_highmannose = is_highmannose
+  ))
+}
+```
+
+
+```{r}
+library(stringr)
+ms_strs <- c()
+for(wurcs in glycanDatabase$StructureInformation) {
+  ms_strs <- c(ms_strs, str_match_all(wurcs, "\\[([^\\]]+)\\]")[[1]][,2] )
+}
+
+table(ms_strs)
+```
+
+```{r}
+analyze_wurcs_structure(wurcs)
+```
+
+```{r}
+parse_ms <- function(ms) {
+  list(
+    anomer  = str_sub(ms, 1, 1),
+    stereo  = str_sub(ms, 2, 5),
+    super   = str_match(ms, "([a-z])-[0-9][a-z_]")[[2]],
+    mod     = str_extract(ms, "_\\d+\\*.*"),  # 修改部分
+    full    = ms
+  )
+}
+ms_df <- map_dfr(ms_strs, parse_ms)
+res_idx <- str_match(wurcs, "/(\\d+(?:-\\d+)*)/")[[2]] |> str_split("-") |> unlist() |> as.integer()
+
+# linkage 字符串
+link_str <- str_match(wurcs, "/[^/]+/([^/]+)$")[[2]]
+links <- str_split(link_str, "_")[[1]]
+link_df <- tibble(
+  from = str_sub(links, 1, 1),
+  from_pos = as.integer(str_sub(links, 2, 2)),
+  to = str_sub(links, 4, 4),
+  to_pos = as.integer(str_sub(links, 5, 5))
+)
+```
+
+```{r}
+ms_df
+```
+
