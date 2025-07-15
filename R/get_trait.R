@@ -5,7 +5,7 @@ neu5gc_cnt  <- function(list) sum(list$seq_raw == "G")
 fucose_cnt  <- function(list) sum(list$seq_raw == "F")
 
 structure_table <- function(list) {
-  res_letters <- letters[seq_along(list$seq_raw)]
+  res_letters <- c(letters, LETTERS)[seq_along(list$seq_raw)]
   seq_raw <- setNames(list$seq_raw, res_letters)
   edges <- list$lin_vec
 
@@ -46,8 +46,9 @@ structure_table <- function(list) {
 
   # hybrid
   kids_of_each_ant <- lapply(ant_roots, function(x) {
-    sub <- subcomponent(g, x, mode = "out");
-    all(seq_raw[sub] == "H")
+    sub <- subcomponent(g, x, mode = "out")
+    # sub <- as.numeric(sub)
+    all(seq_raw[sub$name] == "H")
     }) %>% unlist
   cond1 <- any(kids_of_each_ant)
   cond2 <- ant_cnt >= 2
@@ -79,23 +80,23 @@ get_trait <- function(list) {
   hybrid    <- topo$hybrid
   core_fuc  <- topo$corefucosed
 
-  cat(
-    "Hexose    : ", count_H,  "\n",
-    "HexNAc    : ", count_N,  "\n",
-    "Neu5Ac    : ", count_A,  "\n",
-    "Neu5Gc    : ", count_G,  "\n",
-    "Fucose    : ", count_F,  "\n",
-    "  └─core  : ", core_fuc, "\n",
-    "Antennas  : ", ant_cnt,  "\n",
-    "Bisecting : ", bisecting, "\n",
-    "Complex   : ", complex,   "\n",
-    "HighMan   : ", highman,   "\n",
-    "Hybrid    : ", hybrid,    "\n",
-    sep = "")
+  # cat(
+  #   "Hexose    : ", count_N,  "\n",
+  #   "HexNAc    : ", count_H,  "\n",
+  #   "Neu5Ac    : ", count_A,  "\n",
+  #   "Neu5Gc    : ", count_G,  "\n",
+  #   "Fucose    : ", count_F,  "\n",
+  #   "  └─core  : ", core_fuc, "\n",
+  #   "Antennas  : ", ant_cnt,  "\n",
+  #   "Bisecting : ", bisecting, "\n",
+  #   "Complex   : ", complex,   "\n",
+  #   "HighMan   : ", highman,   "\n",
+  #   "Hybrid    : ", hybrid,    "\n",
+  #   sep = "")
 
-  invisible(list(
-    Hexose   = count_H,
-    HexNAc   = count_N,
+  list(
+    Hexose   = count_N,
+    HexNAc   = count_H,
     Neu5Ac   = count_A,
     Neu5Gc   = count_G,
     Fucose   = count_F,
@@ -105,5 +106,10 @@ get_trait <- function(list) {
     Complex  = complex,
     HighMan  = highman,
     Hybrid   = hybrid
-  ))
+  )
 }
+
+get_trait_from_wurcs <- function(w) {
+  w %>% wurcs_to_tree() %>% get_trait() %>% unlist()
+}
+

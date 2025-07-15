@@ -4,3 +4,5 @@
 ^\.Rproj\.user$
 ^enz$
 ^data$
+^\.Rmd
+^simulation
