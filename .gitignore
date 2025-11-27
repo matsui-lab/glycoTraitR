@@ -3,6 +3,5 @@
 .RData
 .Ruserdata
 
-enz
 data
-old_script
+simulation/data

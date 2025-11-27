@@ -6,9 +6,9 @@ gd_decipher <- read_csv("data/decipher_related/glycanDatabase.csv", show_col_typ
 # pGlyco Human
 gd_pglyco <- read.table("data/pGlyco3_related/pGlyco-N-Human.txt", header = FALSE, skip = 1)
 gd_pglyco <- gd_pglyco$V1 %>% unique()
-
 length(gd_decipher$StructureInformation); length(gd_pglyco)
 ```
+
 # Compare gd_decipher with gd_pglyco3 under pGlyco3 format
 # pGlyco3 format has to be reordered (for the same length branch)
 ```{r}

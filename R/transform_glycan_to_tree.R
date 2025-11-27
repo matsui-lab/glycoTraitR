@@ -47,7 +47,8 @@ res_cat <- c(
   "[a2122h-1b_1-?_2*NCC/3=O]"      = "N"
 )
 
-# Parse a WURCS string into its main components
+# WURCS string into tree structure
+#' @export
 wurcs_to_tree <- function(w){
   core <- sub("^WURCS=[^/]+/", "", w)
 
@@ -73,18 +74,44 @@ wurcs_to_tree <- function(w){
 
   ## RES-Sequence -------
   res_idx  <- as.integer(strsplit(parts[3], "-", fixed = TRUE)[[1]])
-  seq_raw  <- res_raw[res_idx]
+  node  <- res_raw[res_idx]
 
   ## LIN --------
-  lin_vec <- unlist(strsplit(parts[4], "_", fixed = TRUE))
-  lin_vec <- unlist(strsplit(lin_vec, "_", fixed = TRUE))
-  lin_vec <- unlist(strsplit(lin_vec, "\\|"))
-  lin_vec <- grep("^[A-Za-z][0-9?]+-[A-Za-z][0-9?]+$", lin_vec, value = TRUE)
-  lin_vec <- sub("^([A-Za-z])[0-9?]+-([A-Za-z])[0-9?]+$", "\\1-\\2", lin_vec, perl = TRUE)
+  edge <- unlist(strsplit(parts[4], "_", fixed = TRUE))
+  edge <- unlist(strsplit(edge, "_", fixed = TRUE))
+  edge <- unlist(strsplit(edge, "\\|"))
+  edge <- grep("^[A-Za-z][0-9?]+-[A-Za-z][0-9?]+$", edge, value = TRUE)
+  edge <- sub("^([A-Za-z])[0-9?]+-([A-Za-z])[0-9?]+$", "\\1-\\2", edge, perl = TRUE)
 
-  list(seq_raw = seq_raw, lin_vec = lin_vec)
+  list(node = node, edge = edge)
 }
 
-
+# pGlyco3 format into tree structure
+#' @export
+pGlyco3_to_tree <- function(expr) {
+  expr <- strsplit(expr, "")[[1]]
+  node <- character()
+  edge <- character()
+  stack <- c()
+  parent <- NULL
+  idx <- 1
+  for (ch in expr) {
+    if (ch == "(") {
+      stack <- c(parent, stack)
+    } else if (ch == ")") {
+      parent <- stack[1]
+      stack <- stack[-1]
+    } else if (grepl("[A-Za-z]", ch)) {
+      label <- c(letters, LETTERS)[idx]
+      idx <- idx + 1
+      node <- c(node, ch)
+      if (!is.null(parent)) {
+        edge <- c(edge, paste0(parent, "-", label))
+      }
+      parent <- label
+    }
+  }
+  list(node = node, edge = edge)
+}
 
 

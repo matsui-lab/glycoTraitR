@@ -1,30 +1,4 @@
-pGlyco3_to_tree <- function(expr) {
-  expr <- strsplit(expr, "")[[1]]
-  seq_raw <- character()
-  lin_vec <- character()
-  stack <- c()
-  parent <- NULL
-  idx <- 1
-  for (ch in expr) {
-    if (ch == "(") {
-      stack <- c(parent, stack)
-    } else if (ch == ")") {
-      parent <- stack[1]
-      stack <- stack[-1]
-    } else if (grepl("[A-Za-z]", ch)) {
-      label <- c(letters, LETTERS)[idx]
-      idx <- idx + 1
-      seq_raw <- c(seq_raw, ch)
-      if (!is.null(parent)) {
-        lin_vec <- c(lin_vec, paste0(parent, "-", label))
-      }
-      parent <- label
-    }
-  }
-  list(seq_raw = seq_raw, lin_vec = lin_vec)
-}
-
-
+#' @export
 tree_to_pGlyco3 <- function(list) {
   seq_raw <- list$seq_raw
   lin_vec <- list$lin_vec
@@ -85,6 +59,5 @@ tree_to_pGlyco3 <- function(list) {
 }
 
 
-# expr <- gd_pglyco[sample(length(gd_pglyco), 1)]
-# expr %>% pGlyco3_to_tree() %>% tree_to_pGlyco3() == expr
+
 

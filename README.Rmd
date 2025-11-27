@@ -1,0 +1,41 @@
+# *GlycoTraitR* tutorials for
+
+### analyzing structural hetergeneity for glycoproteomics data
+
+------------------------------------------------------------------------
+
+Contenst
+
+-   Introduction
+
+-   Input
+
+    -   GlycoDecipher
+
+    -   pGlyco3
+
+-   Add user-defined trait of interests
+
+-   Macro-heterogeneity Analysis
+
+-   Micro-heterogeneity Analysis
+
+-   Visualization
+
+------------------------------------------------------------------------
+
+## Introduction
+
+Journal Ab
+
+Main Figure
+
+------------------------------------------------------------------------
+
+## Input
+
+------------------------------------------------------------------------
+
+## Add User-Defined Trait of Interests
+
+------------------------------------------------------------------------

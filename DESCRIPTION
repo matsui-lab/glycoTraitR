@@ -9,3 +9,12 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
+Imports: 
+    igraph,
+    purrr,
+    stringr,
+    tidyr
+RoxygenNote: 7.3.1
+Depends: 
+    dplyr,
+    R (>= 2.10)
