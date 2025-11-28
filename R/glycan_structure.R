@@ -140,12 +140,5 @@ struct_table <- function(list, user_defined_traits) {
   c(common_traits, special_traits)
 }
 
-#' @export
-get_trait <- function(list, user_defined_traits = NULL) {
 
-  cnt_trait <- cnt_table(list)
-  struct_trait <- struct_table(list, user_defined_traits)
 
-  traits <- c(cnt_trait, struct_trait)
-  as.list(traits)
-}

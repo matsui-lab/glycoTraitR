@@ -48,7 +48,6 @@ res_cat <- c(
 )
 
 # WURCS string into tree structure
-#' @export
 wurcs_to_tree <- function(w){
   core <- sub("^WURCS=[^/]+/", "", w)
 
@@ -87,7 +86,6 @@ wurcs_to_tree <- function(w){
 }
 
 # pGlyco3 format into tree structure
-#' @export
 pGlyco3_to_tree <- function(expr) {
   expr <- strsplit(expr, "")[[1]]
   node <- character()

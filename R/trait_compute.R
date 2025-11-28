@@ -1,3 +1,12 @@
+get_trait <- function(list, user_defined_traits = NULL) {
+
+  cnt_trait <- cnt_table(list)
+  struct_trait <- struct_table(list, user_defined_traits)
+
+  traits <- c(cnt_trait, struct_trait)
+  as.list(traits)
+}
+
 add_traits_to_gpsm <- function(gpsm, from, user_defined_traits = NULL) {
 
   # Required GPSM columns
@@ -9,15 +18,15 @@ add_traits_to_gpsm <- function(gpsm, from, user_defined_traits = NULL) {
   # Select appropriate glycan-to-tree converter
   if (from == "decipher") {
     get_trait_vector <- function(glycan) {
-        glycan_list <- wurcs_to_tree(glycan)
-        res_list <- get_trait(glycan_list, user_defined_traits)
-        unlist(res_list)
+      glycan_list <- wurcs_to_tree(glycan)
+      res_list <- get_trait(glycan_list, user_defined_traits)
+      unlist(res_list)
     }
   } else if (from == "pGlyco3") {
     get_trait_vector <- function(glycan) {
-        glycan_list <- pGlyco3_to_tree(glycan)
-        res_list <- get_trait(glycan_list, user_defined_traits)
-        unlist(res_list)
+      glycan_list <- pGlyco3_to_tree(glycan)
+      res_list <- get_trait(glycan_list, user_defined_traits)
+      unlist(res_list)
     }
   } else {
     warning("`from` must be either 'decipher' or 'pGlyco3'. No traits were computed.")

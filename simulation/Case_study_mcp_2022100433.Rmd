@@ -133,16 +133,6 @@ n_sub <- count_subgraph_isomorphisms(g_sub, g, method = "vf2",
                                      edge.color2 = NULL)
 par(mfrow=c(1,2))
 show_igraph_tree(g_sub); show_igraph_tree(g); n_sub
-
-################################################################################
-# User can define their only traits
-user_defined_traits <- list(
-  "Sub_struct_1" = list(node = c("H", "N", "F"), edge = c("a-b", "b-c")),
-  "Sub_struct_2" = list(node = c("H", "H", "H"), edge = c("a-b", "b-c"))
-)
-list <- ws[[2478]]
-get_trait(list, user_defined_traits)
-
 ```
 
 

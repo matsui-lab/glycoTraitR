@@ -71,11 +71,3 @@ get_plots <- function(trait_se, group_list, trait, level) {
 }
 
 
-
-
-
-
-
-
-
-
