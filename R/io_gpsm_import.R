@@ -1,26 +1,61 @@
-#' Extract GPSM Matrix from pGlyco3 Output
+#' Import pGlyco3 GPSM results as a long-format table
 #'
-#' This function reads a pGlyco3 GPSM result file and converts it into a
-#' protein–peptide–glycan matrix. It extracts protein, peptide and GPSM counts,
-#' and reshapes the data into a wide matrix where each file is a column.
+#' Read a pGlyco3 GPSM result file and convert it into a long-format
+#' protein–peptide–glycan table with spectral counts per raw file.
+#' Each row corresponds to a unique combination of protein, peptide,
+#' glycan structure, and file.
 #'
-#' @param gpsm_dir Path to the pGlyco3 GPSM output (pGlycoDB-GP-FDR-Pro-Quant-Site.txt) file.
+#' @details
+#' This function takes a pGlyco3 GPSM file as input (typically named
+#' \code{pGlycoDB-GP-FDR-Pro-Quant-Site.txt}). The following steps are performed:
 #'
-#' @return A wide-format data frame where:
 #' \itemize{
-#'   \item \code{Protein} — Protein name
-#'   \item \code{Peptide} — Peptide sequences
-#'   \item \code{GlycanStructure} — Glycan structural annotations from pGlyco3
-#'   \item Sample columns — One column per raw file, containing spectral counts
+#'   \item Select relevant columns (\code{RawName}, \code{Proteins},
+#'         \code{Peptide}, \code{PlausibleStruct}).
+#'   \item Rename them to a standardized schema:
+#'         \code{File}, \code{Protein}, \code{Peptide}, \code{GlycanStructure}.
+#'   \item Collapse multiple protein IDs per PSM into a single
+#'         pipe-separated string (e.g. \code{"P00123|P00456"}).
+#'   \item Aggregate rows by \code{Protein}, \code{Peptide},
+#'         \code{GlycanStructure}, and \code{File} as GPSM counts in each group.
 #' }
+#'
+#' The output of this function is typically used as the input for
+#' \code{\link{build_trait_se}}.
+#'
+#' @param gpsm_dir
+#' A character scalar giving the path to the pGlyco3 GPSM output file
+#' (for example, \code{"pGlycoDB-GP-FDR-Pro-Quant-Site.txt"}).
+#'
+#' @return
+#' A data frame with one row per
+#' \code{Protein}–\code{Peptide}–\code{GlycanStructure}–\code{File}
+#' combination and the following columns:
+#'
+#' \itemize{
+#'   \item \code{Protein} — protein identifier(s)
+#'   \item \code{Peptide} — peptide sequence
+#'   \item \code{GlycanStructure} — glycan structural annotation from pGlyco3
+#'   \item \code{File} — raw file name
+#'   \item \code{count} — spectral count (number of GPSMs) for this combination
+#' }
+#'
+#' @seealso
+#' \code{\link{read_decipher_gpsm}},
+#' \code{\link{build_trait_se}}
 #'
 #' @examples
 #' \dontrun{
-#' gpsm_matrix <- obtain_pGlyco3_gpsm("path/to/pGlyco3_GPSM.txt")
+#' gpsm_table <- read_pGlyco3_gpsm("path/to/pGlycoDB-GP-FDR-Pro-Quant-Site.txt")
+#' head(gpsm_table)
 #' }
 #'
+#' @importFrom dplyr select group_by summarise
+#' @importFrom stringr str_extract_all
+#' @importFrom magrittr %>%
+#'
 #' @export
-obtain_pGlyco3_gpsm <- function(gpsm_dir) {
+read_pGlyco3_gpsm <- function(gpsm_dir) {
   input <- read.delim(gpsm_dir)
   input <- input %>% select("RawName", "Proteins", "Peptide", "PlausibleStruct")
   colnames(input) <- c("File", "Protein", "Peptide", "GlycanStructure")
@@ -28,39 +63,75 @@ obtain_pGlyco3_gpsm <- function(gpsm_dir) {
     str_extract_all("[A-Z0-9]+(?=_)") %>%
     lapply(unique) %>%
     sapply(function(x) paste(x, collapse = "|"))
-  gpsm_matrix <- input %>%
+  gpsm_table <- input %>%
     group_by(Protein, Peptide, GlycanStructure, File) %>%
     summarise(count = n(), .groups = "drop")
-  gpsm_matrix
+  gpsm_table
 }
 
-#' Combine Glyco-Decipher GPSM Results Into a Matrix
+#' Combine Glyco-Decipher GPSM results into a long-format table
 #'
-#' This function reads multiple Glyco-Decipher GPSM result files in a folder,
-#' merges them by Protein–Peptide–GlycanID, converts GlycanID to
-#' glycan structures (wurcs 2.0), and outputs a unified GPSM matrix where each file is a column.
+#' Read multiple Glyco-Decipher GPSM result files from a folder,
+#' merge them into a unified protein–peptide–glycan table, and attach
+#' glycan structures (WURCS 2.0) based on a glycan database.
 #'
-#' @param gpsm_folder_dir A character string. Path to a folder containing
-#' Glyco-Decipher GPSM result files.
+#' @details
+#' This function assumes that the input folder contains one or more
+#' Glyco-Decipher GPSM result files, typically named with the suffix
+#' \code{"_GPSM_DatabaseGlycan.txt"}. For each file:
 #'
-#' @return A wide-format data frame with:
 #' \itemize{
-#'   \item \code{Protein} — Protein name
-#'   \item \code{Peptide} - Peptide sequence
-#'   \item \code{GlycanStructure} — Glycan structural annotations from Decipher (wurcs2.0)
-#'   \item Sample columns — One column per input file with spectrum counts
+#'   \item GPSM records are read and collapsed by
+#'         \code{Protein}, \code{Peptide}, \code{GlycanID}, and \code{File}.
+#'   \item Protein identifiers are simplified to a pipe-separated string
+#'         of unique IDs (similar to \code{\link{read_pGlyco3_gpsm}}).
 #' }
+#'
+#' All files are then combined into a single table, and glycan IDs are
+#' mapped to WURCS structures via the global \code{glycanDatabase} object.
+#' The final table uses a standardized glycan column name
+#' \code{GlycanStructure} for compatibility with downstream functions.
+#'
+#' @param gpsm_folder_dir
+#' A character scalar giving the path to a folder containing
+#' Glyco-Decipher GPSM result files (e.g. files ending with
+#' \code{"_GPSM_DatabaseGlycan.txt"}).
+#'
+#' @return
+#' A data frame (or tibble) in long format with one row per
+#' \code{Protein}–\code{Peptide}–\code{GlycanStructure}–\code{File}
+#' combination and the following columns:
+#'
+#' \itemize{
+#'   \item \code{Protein} — protein identifier(s)
+#'   \item \code{Peptide} — peptide sequence
+#'   \item \code{GlycanStructure} — glycan structural annotation from Decipher (WURCS 2.0)
+#'   \item \code{File} — raw file name
+#'   \item \code{count} — spectral count (number of GPSMs) for this combination
+#' }
+#'
+#' The returned table is designed to be passed to functions such as
+#' \code{\link{build_trait_se}} for glycan trait computation.
+#'
+#' @seealso
+#' \code{\link{read_pGlyco3_gpsm}},
+#' \code{\link{build_trait_se}}
 #'
 #' @examples
 #' \dontrun{
-#' gpsm_matrix <- obtain_decipher_gpsm("path/to/decipher_folder/")
+#' gpsm_table <- read_decipher_gpsm("path/to/decipher_folder/")
+#' head(gpsm_table)
 #' }
 #'
+#' @importFrom dplyr select group_by summarise bind_rows
+#' @importFrom stringr str_extract_all str_remove
+#' @importFrom magrittr %>%
+#'
 #' @export
-obtain_decipher_gpsm <- function(gpsm_folder_dir) {
+read_decipher_gpsm <- function(gpsm_folder_dir) {
   gpsms <- list.files(gpsm_folder_dir)
   file_names <- gpsms %>% str_remove("_GPSM_DatabaseGlycan\\.txt$")
-  gpsm_pathes <- file.path(gpsm_folder_dir, gpsms)
+  gpsm_paths <- file.path(gpsm_folder_dir, gpsms)
   file_GPSM_count <- function(path) {
     psm_count <-
       read.delim(path, header = TRUE, stringsAsFactors = FALSE) %>%
@@ -75,14 +146,14 @@ obtain_decipher_gpsm <- function(gpsm_folder_dir) {
 
     psm_count
   }
-  gpsm_list <- lapply(gpsm_pathes, file_GPSM_count)
-  gpsm_matrix <- bind_rows(gpsm_list)
+  gpsm_list <- lapply(gpsm_paths, file_GPSM_count)
+  gpsm_table <- bind_rows(gpsm_list)
 
   # Add wurcs to glyco-decipher columns
-  ind <- match(gpsm_matrix$GlycanID, glycanDatabase$GlycanID)
-  gpsm_matrix$GlycanID <- glycanDatabase$StructureInformation[ind]
+  ind <- match(gpsm_table$GlycanID, glycanDatabase$GlycanID)
+  gpsm_table$GlycanID <- glycanDatabase$StructureInformation[ind]
   # Rename the colnames
-  colnames(gpsm_matrix)[1:3] <- c("Protein", "Peptide", "GlycanStructure")
+  colnames(gpsm_table)[1:3] <- c("Protein", "Peptide", "GlycanStructure")
 
-  gpsm_matrix
+  gpsm_table
 }

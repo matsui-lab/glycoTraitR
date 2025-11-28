@@ -1,4 +1,81 @@
-obtain_changed_trait_table <- function(trait_se, group_list, psm_thres = 20) {
+#' Differential analysis of glycan traits between experimental groups
+#'
+#' Perform group-wise statistical testing on glycan trait matrices stored in a
+#' `SummarizedExperiment` created by [`build_trait_se()`]. For each glycan
+#' trait and each site/protein row, the function compares trait intensities
+#' across user-specified experimental groups using Welch’s t-test and
+#' Levene’s variance test.
+#'
+#' @details
+#' Each assay in `trait_se` represents a glycan trait matrix, with:
+#'
+#' * **rows** = glycopeptides (site-level) or proteins (protein-level)
+#' * **columns** = PSMs
+#'
+#' For each trait × feature combination:
+#'
+#' 1. Extract PSM-level trait intensities for samples belonging to the
+#'    specified `group_levels`.
+#' 2. Remove missing values.
+#' 3. Exclude cases where either group has fewer than `min_psm` PSMs.
+#' 4. Exclude all-zero traits (boolean-like traits).
+#' 5. Run:
+#'    * Welch two-sample t-test (`t.test`)
+#'    * Levene's variance test (`car::leveneTest`, median centered)
+#'
+#' A result is returned only if **either** test shows p < 0.05.
+#'
+#' @param trait_se
+#' A `SummarizedExperiment` containing trait matrices (one assay per trait),
+#' typically returned by [`build_trait_se()`].
+#'
+#' @param group_col
+#' The column name in `colData(trait_se)` defining sample group membership.
+#'
+#' @param group_levels
+#' Character vector specifying which values of `group_col` to compare.
+#' Usually a length-2 vector (e.g., `c("Control","Treatment")`).
+#'
+#' @param min_psm
+#' Minimum required PSM count per group for statistical testing.
+#' Default: `20`.
+#'
+#' @return
+#' A data frame of significant trait–site (or trait–protein) comparisons with:
+#'
+#' * `trait`  — glycan trait name
+#' * `level`  — site/protein identifier
+#' * `l_pval` — Levene test p-value
+#' * `f_val`  — Levene test F statistic
+#' * `t_pval` — Welch t-test p-value
+#' * `t_val`  — t-statistic
+#'
+#' Rows correspond only to significant comparisons (p < 0.05).
+#'
+#' @examples
+#' \dontrun{
+#' res <- analyze_trait_changes(
+#'   trait_se     = se,
+#'   group_col    = "condition",
+#'   group_levels = c("Control", "Treatment"),
+#'   min_psm      = 20
+#' )
+#' head(res)
+#' }
+#'
+#' @seealso
+#' * [`build_trait_se()`] — construct trait matrices
+#' * `car::leveneTest`
+#' * `stats::t.test`
+#'
+#' @importFrom pbapply pblapply
+#' @importFrom SummarizedExperiment assays colData rowData
+#'
+#' @export
+analyze_trait_changes <- function(trait_se,
+                                  group_col,
+                                  group_levels,
+                                  min_psm = 20) {
 
   trait_list <- assays(trait_se)
   col_data   <- colData(trait_se)
@@ -7,22 +84,19 @@ obtain_changed_trait_table <- function(trait_se, group_list, psm_thres = 20) {
   n_level   <- nrow(trait_list[[1]])
   trait_len <- length(trait_list)
 
-  # group columns
-  col_sel   <- names(group_list)
-  group     <- group_list[[col_sel]]
-  if(! col_sel %in% names(col_data)) {
+  if (! group_col %in% names(col_data)) {
     stop(
       sprintf(
-        "Column '%s' specified in group_list was not found in colData. ",
-        col_sel
+        "Column '%s' was not found in colData.\nAvailable columns: %s",
+        group_col,
+        paste(names(col_data), collapse = ", ")
       ),
-      "Available columns are: ",
-      paste(names(col_data), collapse = ", "),
       call. = FALSE
     )
   }
-  col_ind   <- col_data[[col_sel]] %in% group
-  cur_group <- col_data[[col_sel]][col_ind]
+
+  col_ind   <- col_data[[group_col]] %in% group_levels
+  cur_group <- col_data[[group_col]][col_ind]
 
   pairs <- expand.grid(i = seq_len(n_level), j = seq_len(trait_len))
 
@@ -36,7 +110,7 @@ obtain_changed_trait_table <- function(trait_se, group_list, psm_thres = 20) {
     meta_x  <- cur_group[!na_ind]
 
     # skip if one of the group has less psms than threshold
-    if (any(table(meta_x)[group] < psm_thres))
+    if (any(table(meta_x)[group_levels] < min_psm))
       return(NULL)
     # skip all-zero vectors (for bool type traits)
     if (all(value_x == 0))

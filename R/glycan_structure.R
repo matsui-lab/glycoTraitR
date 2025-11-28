@@ -1,24 +1,64 @@
-cnt_table <- function(list) {
-  c(GlycanSize = length(list$node),
-    Hexose = sum(list$node == "H"),
-    HexNAc = sum(list$node == "N"),
-    Neu5Ac = sum(list$node == "A"),
-    Neu5Gc = sum(list$node == "G"),
-    Fucose = sum(list$node == "F"))
+#' Count monosaccharide residues in a parsed glycan tree
+#'
+#' Compute residue-level composition traits from a parsed glycan tree.
+#' This includes counts of common monosaccharides (Hexose, HexNAc, Neu5Ac,
+#' Neu5Gc, Fucose) and the total glycan size.
+#'
+#' The function operates on glycan trees produced by
+#' [`parse_wurcs_structure()`] or [`parse_pGlyco3_structure()`], which
+#' represent glycans as residue vectors (`node`) and glycosidic linkages
+#' (`edge`).
+#'
+#' @param tree A parsed glycan tree containing:
+#'   * `node`: a vector of residue codes (e.g. `"H"`, `"N"`, `"A"`, `"F"`)
+#'   * `edge`: a character vector of parent–child edges
+#'
+#' @return A named numeric vector containing:
+#'   * `GlycanSize` — number of residues
+#'   * `Hexose`, `HexNAc`, `Neu5Ac`, `Neu5Gc`, `Fucose`
+#'
+#' @keywords internal
+#' @noRd
+count_residues <- function(tree) {
+  c(GlycanSize = length(tree$node),
+    Hexose = sum(tree$node == "H"),
+    HexNAc = sum(tree$node == "N"),
+    Neu5Ac = sum(tree$node == "A"),
+    Neu5Gc = sum(tree$node == "G"),
+    Fucose = sum(tree$node == "F"))
 }
 
-get_igraph_tree <- function(list) {
+#' Construct an igraph representation of a glycan tree
+#'
+#' Convert a parsed glycan tree (`node` + `edge`) into a directed
+#' `igraph` object with parent–child relationships and residue-level
+#' metadata suitable for structural motif detection.
+#'
+#' The resulting graph contains the following vertex attributes:
+#' * `name`   — synthetic node label (`"a"`, `"b"`, ...)
+#' * `residue` — residue type (H, N, A, F, G)
+#' * `type`    — identical to residue (for convenience)
+#' * `color`   — color encoding of residue type
+#' * `is_root` — TRUE if the vertex is the structural root
+#'
+#' @param tree A parsed glycan tree with components `node` and `edge`.
+#'
+#' @return A directed `igraph` object representing the glycan structure.
+#'
+#' @keywords internal
+#' @noRd
+build_glycan_igraph <- function(tree) {
 
   # set nodes as a,b,c...
-  ids <- c(letters, LETTERS)[seq_along(list$node)]
+  ids <- c(letters, LETTERS)[seq_along(tree$node)]
   vtab <- data.frame(
     name    = ids,
-    residue = list$node
+    residue = tree$node
   )
-  names(list$node) <- ids
+  names(tree$node) <- ids
 
   # undirected edge
-  undirected_mat <- do.call(rbind, strsplit(list$edge, "-", fixed = TRUE))
+  undirected_mat <- do.call(rbind, strsplit(tree$edge, "-", fixed = TRUE))
   colnames(undirected_mat) <- c("v1", "v2")
 
   ## create a undirected graph
@@ -26,7 +66,7 @@ get_igraph_tree <- function(list) {
 
   # from root a to decide direction
   bfs_res <- igraph::bfs(g0, root = "a", father = TRUE)
-  father  <- setNames(igraph::V(g0)$name[bfs_res$father], igraph::V(g0)$name)  # child → father
+  father  <- setNames(igraph::V(g0)$name[bfs_res$father], igraph::V(g0)$name)
   father  <- father[!is.na(father)]
 
   directed_df <- data.frame(
@@ -36,7 +76,7 @@ get_igraph_tree <- function(list) {
   )
 
   # directed graph
-  g <- graph_from_data_frame(
+  g <- igraph::graph_from_data_frame(
     d        = directed_df,
     directed = TRUE,
     vertices = vtab
@@ -44,19 +84,47 @@ get_igraph_tree <- function(list) {
   igraph::V(g)$is_root <- igraph::V(g)$name == "a"
 
   res_cols <- c("N" = "#1f77b4", "A" = "#800080", "H" = "#2ca02c", "F" = "#d62728", "G" = "#7EC1FF")
-  igraph::V(g)$type <- setNames(list$node, ids)[igraph::V(g)$name]
+  igraph::V(g)$type <- setNames(tree$node, ids)[igraph::V(g)$name]
   igraph::V(g)$color <- res_cols[igraph::V(g)$type]
   g
 }
 
-
-struct_table <- function(list, user_defined_traits) {
-  res_letters <- c(letters, LETTERS)[seq_along(list$node)]
-  node <- setNames(list$node, res_letters)
-  edges <- list$edge
+#' Compute structural glycan traits from an igraph glycan tree
+#'
+#' Evaluate structural glycan features including:
+#' * number of antennas
+#' * bisecting GlcNAc
+#' * complex-type branching
+#' * high-mannose characteristics
+#' * hybrid-type features
+#' * fucosylation (core vs antennary)
+#'
+#' Additionally, user-defined structural motifs can be quantified
+#' using subgraph isomorphism (`igraph::count_subgraph_isomorphisms()`).
+#'
+#' @details
+#' Structural traits are computed from `igraph` objects built by
+#' [`build_glycan_igraph()`].
+#'
+#' User-defined motifs must also be provided as parsed glycan trees
+#' (`node` + `edge`), allowing exact structural pattern matching.
+#'
+#' @param tree A parsed glycan tree.
+#' @param motifs Optional named list of user-defined motif trees.
+#'
+#' @return A named numeric vector combining:
+#'   * built-in structural traits (`Antennas`, `Bisect`, `Complex`,
+#'     `HighMan`, `Hybrid`, `CoreFuc`, `AntFuc`)
+#'   * user-defined motif counts
+#'
+#' @keywords internal
+#' @noRd
+compute_structural_traits <- function(tree, motifs) {
+  res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
+  node <- setNames(tree$node, res_letters)
 
   # use igraph to represent a glycan structure
-  g <- get_igraph_tree(list)
+  g <- build_glycan_igraph(tree)
 
   # corefucosed
   kids_of_a <- igraph::neighbors(g, "a", mode = "out")
@@ -121,14 +189,14 @@ struct_table <- function(list, user_defined_traits) {
 
   # add user-defined structure
   special_traits <- c()
-  if(!is.null(user_defined_traits)) {
-    n <- length(user_defined_traits)
+  if(!is.null(motifs)) {
+    n <- length(motifs)
     special_traits <- c()
     for(i in 1:n) {
-      trait <- names(user_defined_traits)[i]
-      g_sub <- get_igraph_tree(user_defined_traits[[i]])
+      trait <- names(motifs)[i]
+      g_sub <- build_glycan_igraph(motifs[[i]])
 
-      n_sub <- count_subgraph_isomorphisms(g_sub, g, method = "vf2",
+      n_sub <- igraph::count_subgraph_isomorphisms(g_sub, g, method = "vf2",
                                            vertex.color1 = factor(V(g)$type),
                                            vertex.color2 = factor(V(g_sub)$type),
                                            edge.color1 = NULL,
