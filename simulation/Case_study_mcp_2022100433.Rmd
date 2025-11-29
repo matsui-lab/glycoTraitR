@@ -5,40 +5,43 @@ output: html_document
 
 ```{r}
 library(glycoTraitR)
-library(dplyr)
-library(stringr)
-library(igraph)
 ```
 
+# Example of pGlyco3 PSM input
+```{r}
+url <- "https://zenodo.org/records/17756830/files/pGlycoDB-GP-FDR-Pro-Quant-Site.txt?download=1"
+download.file(url, "pglyco3_full.txt", mode = "wb")
+gpsm <- read_pGlyco3_gpsm("pglyco3_full.txt")
+```
 
 ```{r}
 # preprocess the pGlyco3 gpsm matrix
 gpsm_dir <- "~/glycoTraitR/simulation/data/pGlyco3_related/pGlycoDB-GP-FDR-Pro-Quant-Site.txt"
-pGlyco3_gpsm_mat <- obtain_pGlyco3_gpsm(gpsm_dir)
+pGlyco3_gpsm <- read_pGlyco3_gpsm(gpsm_dir)
 
 # preprocess the decipher gpsm matrix
 gpsm_folder_dir <- "~/glycoTraitR/simulation/data/decipher_related/GPSM_mcp_2022_100433/"
-decipher_gpsm_mat <- obtain_decipher_gpsm(gpsm_folder_dir)
+decipher_gpsm <- read_decipher_gpsm(gpsm_folder_dir)
 
 # obtain the summarized experiment object of trait matrices at the site / protein level
 meta <- readRDS("~/glycoTraitR/simulation/meta_mcp_2022_100433.rds")
 
-pGlyco3_gpsm_mat; decipher_gpsm_mat
+pGlyco3_gpsm; decipher_gpsm
 ```
 
 
 ```{r}
-decipher_trait_se <- obtain_trait_se(
+decipher_trait_se <- build_trait_se(
   decipher_gpsm,
-  from = "decipher",
-  user_defined_traits = NULL,
+  from = "decipher", 
+  motifs = NULL,
   level = "protein",
   meta = meta
 )
-pGlyco3_trait_se <- obtain_trait_se(
+pGlyco3_trait_se <- build_trait_se(
   pGlyco3_gpsm,
   from = "pGlyco3",
-  user_defined_traits = NULL,
+  motifs = NULL,
   level = "protein",
   meta = meta
 )
@@ -46,26 +49,33 @@ pGlyco3_trait_se <- obtain_trait_se(
 
 # visualize the protein between 
 ```{r}
-group_list <- list(Diagnosis = c(test = "Symptomatic", control = "Normal"))
+decipher_res <- analyze_trait_changes(
+  decipher_trait_se,
+  group_col = "Diagnosis",
+  group_levels = c(test = "Symptomatic", control = "Normal"),
+  min_psm = 20)
 
-decipher_trait <- obtain_changed_trait_table(decipher_trait_se, group_list, psm_thres = 20)
-pGlyco3_trait <- obtain_changed_trait_table(pGlyco3_trait_se, group_list, psm_thres = 20)
+pGlyco3_res <- analyze_trait_changes(
+  pGlyco3_trait_se, 
+  group_col = "Diagnosis",
+  group_levels = c(test = "Symptomatic", control = "Normal"),
+  min_psm = 20)
 
-decipher_trait
-pGlyco3_trait
+decipher_res
+pGlyco3_res
 ```
 
 ```{r}
 trait_level <- merge(
-  decipher_trait[,1:2],
-  pGlyco3_trait[,1:2],
+  decipher_res[,1:2],
+  pGlyco3_res[,1:2],
   by = c("trait", "level")
 )
 
-decipher_trait %>% 
+decipher_res %>% 
   filter(trait %in% trait_level$trait) %>% 
   filter(level %in% trait_level$level)
-pGlyco3_trait %>%
+pGlyco3_res %>%
   filter(trait %in% trait_level$trait) %>% 
   filter(level %in% trait_level$level)
 ```
@@ -75,64 +85,20 @@ pGlyco3_trait %>%
 ## boxplot 
 ```{r}
 trait_se <- decipher_trait_se
-i <- sample(nrow(decipher_trait), 1)
-trait <- decipher_trait[i,1]
-level <- decipher_trait[i,2]
-trait; level
-group_list <- list(Diagnosis = c(test = "Symptomatic", control = "Normal"))
+i <- sample(nrow(decipher_res), 1)
+trait <- decipher_res[i,1]
+level <- decipher_res[i,2]
 
-gplots <- get_plots(trait_se, group_list, trait, level)
+# trait <- "Neu5Ac"; level <- "GABR2"
+trait <- "Antennas"; level <- "LAMP2"
+trait <- "HexNAc"; level <-	"CNTN1"
+gplots <- plot_trait_distribution(trait_se, 
+                                  group_col = "Diagnosis", 
+                                  group_levels = c(test = "Symptomatic", control = "Normal"), 
+                                  trait, 
+                                  level)
+library(patchwork)
 gplots[[1]] | gplots[[2]]
-```
-
-
-
-# define your own trait
-```{r}
-ws <- lapply(decipher_gpsm_mat$GlycanStructure, wurcs_to_tree)
-sts <- lapply(pGlyco3_gpsm_mat$GlycanStructure, pGlyco3_to_tree)
-
-sts[[1]] %>% get_igraph_tree() %>% show_igraph_tree()
-ws[[1]] %>% get_igraph_tree() %>% show_igraph_tree()
-```
-
-```{r}
-#### Example 1 #####
-list <- sts[[633]]
-g <- get_igraph_tree(list)
-
-list_sub <- list()
-list_sub$node <- c("H", "H", "H")
-list_sub$edge <- c("a-b", "b-c")
-g_sub <- get_igraph_tree(list_sub)
-
-n_sub <- count_subgraph_isomorphisms(g_sub, g, method = "vf2",
-                                     vertex.color1 = factor(V(g)$type),
-                                     vertex.color2 = factor(V(g_sub)$type),
-                                     edge.color1 = NULL,
-                                     edge.color2 = NULL)
-par(mfrow=c(1,2))
-show_igraph_tree(g_sub); show_igraph_tree(g); n_sub
-```
-
-
-```{r}
-#### Example 2 #####
-list <- sts[[2478]]
-g <- get_igraph_tree(list)
-
-list_sub <- list()
-list_sub$node <- c("H", "N", "F")
-list_sub$edge <- c("a-b", "b-c")
-g_sub <- get_igraph_tree(list_sub)
-
-n_sub <- count_subgraph_isomorphisms(g_sub, g, method = "vf2",
-                                     vertex.color1 = factor(V(g)$type),
-                                     vertex.color2 = factor(V(g_sub)$type),
-                                     edge.color1 = NULL,
-                                     edge.color2 = NULL)
-par(mfrow=c(1,2))
-show_igraph_tree(g_sub); show_igraph_tree(g); n_sub
 ```
 
 
