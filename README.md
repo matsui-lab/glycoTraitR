@@ -1,4 +1,4 @@
-![R](https://img.shields.io/badge/R-glycomics-blue?style=flat-square) ![status](https://img.shields.io/badge/status-active-success?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
+![R](https://img.shields.io/badge/R-glycoproteomics-blue?style=flat-square) ![status](https://img.shields.io/badge/status-active-success?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square)
 
 # glycoTraitR
 
@@ -6,10 +6,16 @@
 
 It provides a streamlined workflow for:
 
--   parsing WURCS 2.0 and pGlyco3 glycan strings\
--   computing composition & structural traits\
--   summarizing glycan–PSM trait matrices at site/protein level (`SummarizedExperiment`)\
+-   parsing WURCS 2.0 and pGlyco3 glycan strings
+-   computing composition & structural traits
+-   summarizing glycan–PSM trait matrices at site/protein level (`SummarizedExperiment`)
 -   performing differential trait analysis and visualizing trait changes
+
+# Download Package
+``` r
+# install.packages("devtools")
+devtools::install_github("matsui-lab/glycoTraitR")
+```
 
 # Package Workflow
 
@@ -100,6 +106,4 @@ p$p_box
 
 # Contributing
 
-Contributions are welcome!\
-For questions or collaboration, feel free to contact:\
-zhang.bingyuan.w8 [at] f.mail.nagoya-u.ac.jp
+Contributions are welcome! For questions or collaboration, feel free to contact: zhang.bingyuan.w8 [at] f.mail.nagoya-u.ac.jp
