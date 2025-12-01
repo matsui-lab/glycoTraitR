@@ -23,8 +23,7 @@
 #' The output of this function is typically used as the input for
 #' \code{\link{build_trait_se}}.
 #'
-#' @param gpsm_dir
-#' A character scalar giving the path to the pGlyco3 GPSM output file
+#' @param gpsm_dir The path to the pGlyco3 GPSM output file
 #' (for example, \code{"pGlycoDB-GP-FDR-Pro-Quant-Site.txt"}).
 #'
 #' @return
@@ -37,7 +36,7 @@
 #'   \item \code{Peptide} — peptide sequence
 #'   \item \code{GlycanStructure} — glycan structural annotation from pGlyco3
 #'   \item \code{File} — raw file name
-#'   \item \code{count} — spectral count (number of GPSMs) for this combination
+#'   \item \code{Count} — spectral count (number of GPSMs) for this combination
 #' }
 #'
 #' @seealso
@@ -65,52 +64,45 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
     sapply(function(x) paste(x, collapse = "|"))
   gpsm_table <- input %>%
     group_by(Protein, Peptide, GlycanStructure, File) %>%
-    summarise(count = n(), .groups = "drop")
+    summarise(Count = n(), .groups = "drop")
   gpsm_table
 }
 
 #' Combine Glyco-Decipher GPSM results into a long-format table
 #'
-#' Read multiple Glyco-Decipher GPSM result files from a folder,
+#' Read multiple Glyco-Decipher GPSM files from a folder,
 #' merge them into a unified protein–peptide–glycan table, and attach
-#' glycan structures (WURCS 2.0) based on a glycan database.
+#' glycan structures (WURCS 2.0).
 #'
 #' @details
 #' This function assumes that the input folder contains one or more
-#' Glyco-Decipher GPSM result files, typically named with the suffix
-#' \code{"_GPSM_DatabaseGlycan.txt"}. For each file:
-#'
-#' \itemize{
-#'   \item GPSM records are read and collapsed by
-#'         \code{Protein}, \code{Peptide}, \code{GlycanID}, and \code{File}.
-#'   \item Protein identifiers are simplified to a pipe-separated string
-#'         of unique IDs (similar to \code{\link{read_pGlyco3_gpsm}}).
-#' }
-#'
+#' Glyco-Decipher GPSM files, typically named with the suffix
+#' \code{"_GPSM_DatabaseGlycan.txt"}. For each file,
+#' GPSM records are read and collapsed by \code{Protein}, \code{Peptide},
+#' \code{GlycanID}, \code{File}, and \code{Count}.
 #' All files are then combined into a single table, and glycan IDs are
 #' mapped to WURCS structures via the global \code{glycanDatabase} object.
 #' The final table uses a standardized glycan column name
 #' \code{GlycanStructure} for compatibility with downstream functions.
 #'
 #' @param gpsm_folder_dir
-#' A character scalar giving the path to a folder containing
-#' Glyco-Decipher GPSM result files (e.g. files ending with
+#' The path to a folder containing Glyco-Decipher GPSM files (e.g. files ending with
 #' \code{"_GPSM_DatabaseGlycan.txt"}).
 #'
 #' @return
-#' A data frame (or tibble) in long format with one row per
+#' A data frame in long format with one row per
 #' \code{Protein}–\code{Peptide}–\code{GlycanStructure}–\code{File}
 #' combination and the following columns:
 #'
 #' \itemize{
 #'   \item \code{Protein} — protein identifier(s)
 #'   \item \code{Peptide} — peptide sequence
-#'   \item \code{GlycanStructure} — glycan structural annotation from Decipher (WURCS 2.0)
+#'   \item \code{GlycanStructure} — glycan structural annotation (WURCS 2.0)
 #'   \item \code{File} — raw file name
-#'   \item \code{count} — spectral count (number of GPSMs) for this combination
+#'   \item \code{Count} — spectral count (number of GPSMs) for this combination
 #' }
 #'
-#' The returned table is designed to be passed to functions such as
+#' The returned table is designed to be passed to
 #' \code{\link{build_trait_se}} for glycan trait computation.
 #'
 #' @seealso
@@ -137,7 +129,7 @@ read_decipher_gpsm <- function(gpsm_folder_dir) {
       read.delim(path, header = TRUE, stringsAsFactors = FALSE) %>%
       select(Protein, Peptide, GlycanID, File) %>%
       group_by(Protein, Peptide, GlycanID, File) %>%
-      summarise(count = n(), .groups = "drop")
+      summarise(Count = n(), .groups = "drop")
 
     psm_count$Protein <-  psm_count$Protein %>%
       str_extract_all("[A-Z0-9]+(?=_)") %>%

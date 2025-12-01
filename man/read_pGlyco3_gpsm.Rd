@@ -7,7 +7,7 @@
 read_pGlyco3_gpsm(gpsm_dir)
 }
 \arguments{
-\item{gpsm_dir}{A character scalar giving the path to the pGlyco3 GPSM output file
+\item{gpsm_dir}{The path to the pGlyco3 GPSM output file
 (for example, \code{"pGlycoDB-GP-FDR-Pro-Quant-Site.txt"}).}
 }
 \value{
@@ -20,7 +20,7 @@ combination and the following columns:
   \item \code{Peptide} — peptide sequence
   \item \code{GlycanStructure} — glycan structural annotation from pGlyco3
   \item \code{File} — raw file name
-  \item \code{count} — spectral count (number of GPSMs) for this combination
+  \item \code{Count} — spectral count (number of GPSMs) for this combination
 }
 }
 \description{

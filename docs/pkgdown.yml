@@ -1,0 +1,8 @@
+pandoc: 3.6.3
+pkgdown: 2.0.9
+pkgdown_sha: ~
+articles:
+  define_glycan_motifs: define_glycan_motifs.html
+  quick_start: quick_start.html
+last_built: 2025-12-01T06:39Z
+

@@ -2,37 +2,18 @@
 % Please edit documentation in R/plot_glyco_traits.R
 \name{plot_glycan_tree}
 \alias{plot_glycan_tree}
-\title{Plot a Glycan Structure as an igraph Tree}
+\title{Plot a glycan structure represented as an igraph tree}
 \usage{
 plot_glycan_tree(g)
 }
 \arguments{
-\item{g}{An `igraph` object representing a glycan structure.
-Nodes should contain residue type information in `V(g)$type` and
-vertex colors in `V(g)$color`, as assigned by `build_glycan_igraph()`.}
+\item{g}{An igraph object representing a glycan tree from \code{\link{build_glycan_igraph}}.}
 }
 \value{
-Invisibly returns `NULL`. A glycan tree plot is drawn as a side effect.
+A glycan topology plot is drawn as a side effect.
 }
 \description{
-Visualize a glycan structure represented as an `igraph` object using a
-tree layout.
-This function is primarily used to inspect glycan topology produced
-by parsing functions such as `wurcs_to_tree()` or `pGlyco3_to_tree()`,
-after conversion to an igraph representation via `build_glycan_igraph()`.
-}
-\details{
-The glycan is drawn with:
-
-* a tree layout rooted at `"a"`
-* node labels showing residue types
-
-This function produces a base R plot and returns no value.
-}
-\examples{
-\dontrun{
-g <- build_glycan_igraph(wurcs_to_tree("WURCS=..."))
-plot_glycan_tree(g)
-}
-
+Visualize a glycan structure encoded as an igraph object produced by
+\code{\link{build_glycan_igraph}}. This plot is mainly intended for inspecting
+glycan topology (branching, residue types, connectivity).
 }

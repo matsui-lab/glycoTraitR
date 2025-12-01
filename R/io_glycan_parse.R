@@ -81,7 +81,6 @@ WURCS_RES_MAP <- c(
 #' }
 #'
 #' @keywords internal
-#' @noRd
 wurcs_to_tree <- function(w){
   core <- sub("^WURCS=[^/]+/", "", w)
 
@@ -146,7 +145,6 @@ wurcs_to_tree <- function(w){
 #' }
 #'
 #' @keywords internal
-#' @noRd
 pGlyco3_to_tree <- function(expr) {
   expr <- strsplit(expr, "")[[1]]
   node <- character()

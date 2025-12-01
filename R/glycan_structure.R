@@ -1,52 +1,23 @@
-#' Count monosaccharide residues in a parsed glycan tree
-#'
-#' Compute residue-level composition traits from a parsed glycan tree.
-#' This includes counts of common monosaccharides (Hexose, HexNAc, Neu5Ac,
-#' Neu5Gc, Fucose) and the total glycan size.
-#'
-#' The function operates on glycan trees produced by
-#' [`parse_wurcs_structure()`] or [`parse_pGlyco3_structure()`], which
-#' represent glycans as residue vectors (`node`) and glycosidic linkages
-#' (`edge`).
-#'
-#' @param tree A parsed glycan tree containing:
-#'   * `node`: a vector of residue codes (e.g. `"H"`, `"N"`, `"A"`, `"F"`)
-#'   * `edge`: a character vector of parent–child edges
-#'
-#' @return A named numeric vector containing:
-#'   * `GlycanSize` — number of residues
-#'   * `Hexose`, `HexNAc`, `Neu5Ac`, `Neu5Gc`, `Fucose`
-#'
-#' @keywords internal
-#' @noRd
-count_residues <- function(tree) {
-  c(GlycanSize = length(tree$node),
-    Hexose = sum(tree$node == "H"),
-    HexNAc = sum(tree$node == "N"),
-    Neu5Ac = sum(tree$node == "A"),
-    Neu5Gc = sum(tree$node == "G"),
-    Fucose = sum(tree$node == "F"))
-}
-
 #' Construct an igraph representation of a glycan tree
 #'
-#' Convert a parsed glycan tree (`node` + `edge`) into a directed
+#' Convert a parsed glycan tree into a directed
 #' `igraph` object with parent–child relationships and residue-level
 #' metadata suitable for structural motif detection.
 #'
 #' The resulting graph contains the following vertex attributes:
-#' * `name`   — synthetic node label (`"a"`, `"b"`, ...)
-#' * `residue` — residue type (H, N, A, F, G)
-#' * `type`    — identical to residue (for convenience)
-#' * `color`   — color encoding of residue type
-#' * `is_root` — TRUE if the vertex is the structural root
+#' \itemize{
+#'   \item \code{name}    — synthetic node label (`"a"`, `"b"`, ...)
+#'   \item \code{residue} — residue type (H, N, A, F, G)
+#'   \item \code{type}    — identical to residue (for convenience)
+#'   \item \code{color}   — color encoding of residue type
+#'   \item \code{is_root} — TRUE if the vertex is the structural root
+#' }
 #'
-#' @param tree A parsed glycan tree with components `node` and `edge`.
+#' @param tree A parsed glycan tree from \code{\link{pGlyco3_to_tree}} or \code{\link{wurcs_to_tree}}.
 #'
 #' @return A directed `igraph` object representing the glycan structure.
 #'
 #' @keywords internal
-#' @noRd
 build_glycan_igraph <- function(tree) {
 
   # set nodes as a,b,c...
@@ -70,8 +41,8 @@ build_glycan_igraph <- function(tree) {
   father  <- father[!is.na(father)]
 
   directed_df <- data.frame(
-    from = father,                       # parent
-    to   = names(father),                # child
+    from = father,
+    to   = names(father),
     stringsAsFactors = FALSE
   )
 
@@ -89,37 +60,54 @@ build_glycan_igraph <- function(tree) {
   g
 }
 
-#' Compute structural glycan traits from an igraph glycan tree
+#' Count monosaccharide residues in a parsed glycan tree
 #'
-#' Evaluate structural glycan features including:
-#' * number of antennas
-#' * bisecting GlcNAc
-#' * complex-type branching
-#' * high-mannose characteristics
-#' * hybrid-type features
-#' * fucosylation (core vs antennary)
-#'
-#' Additionally, user-defined structural motifs can be quantified
-#' using subgraph isomorphism (`igraph::count_subgraph_isomorphisms()`).
+#' Compute residue-level composition traits from a parsed glycan tree.
+#' This includes counts of common monosaccharides (Hexose, HexNAc, Neu5Ac,
+#' Neu5Gc, Fucose) and the total glycan size.
 #'
 #' @details
-#' Structural traits are computed from `igraph` objects built by
-#' [`build_glycan_igraph()`].
+#' The function operates on glycan trees produced by
+#' \code{\link{build_glycan_tree}} or \code{\link{parse_pGlyco3_structure}}, which
+#' represent glycans as residue vectors (`node`) and glycosidic linkages
+#' (`edge`).
 #'
-#' User-defined motifs must also be provided as parsed glycan trees
-#' (`node` + `edge`), allowing exact structural pattern matching.
+#' @param tree A parsed glycan tree from \code{\link{pGlyco3_to_tree}} or \code{\link{wurcs_to_tree}}.
 #'
-#' @param tree A parsed glycan tree.
-#' @param motifs Optional named list of user-defined motif trees.
-#'
-#' @return A named numeric vector combining:
-#'   * built-in structural traits (`Antennas`, `Bisect`, `Complex`,
-#'     `HighMan`, `Hybrid`, `CoreFuc`, `AntFuc`)
-#'   * user-defined motif counts
+#' @return A named numeric vector containing:
+#'   `GlycanSize`, `Hexose`, `HexNAc`, `Neu5Ac`, `Neu5Gc`, `Fucose`
 #'
 #' @keywords internal
-#' @noRd
-compute_structural_traits <- function(tree, motifs) {
+count_residues <- function(tree) {
+  c(GlycanSize = length(tree$node),
+    Hexose = sum(tree$node == "H"),
+    HexNAc = sum(tree$node == "N"),
+    Neu5Ac = sum(tree$node == "A"),
+    Neu5Gc = sum(tree$node == "G"),
+    Fucose = sum(tree$node == "F"))
+}
+
+
+#' Compute structural glycan traits from an igraph glycan tree
+#'
+#' Evaluate build-in structural glycan traits including:
+#' \itemize{
+#'   \item \code{Antenna numbers}
+#'   \item \code{Bisecting-type}
+#'   \item \code{Complex-type}
+#'   \item \code{High-mannose-type}
+#'   \item \code{Hybrid-type}
+#'   \item \code{Core-fucosed}
+#'   \item \code{Antennary-fucosed}
+#' }
+#'
+#' @param tree A parsed glycan tree from \code{\link{pGlyco3_to_tree}} or \code{\link{wurcs_to_tree}}.
+#'
+#' @return A named numeric vector of built-in structural traits and
+#' user-defined motif counts
+#'
+#' @keywords internal
+compute_structural_traits <- function(tree) {
   res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
   node <- setNames(tree$node, res_letters)
 
@@ -177,7 +165,7 @@ compute_structural_traits <- function(tree, motifs) {
     hybrid <- 0
   }
 
-  common_traits <- c(
+  c(
     Antennas = ant_cnt,
     Bisect = bisecting,
     Complex = complex,
@@ -187,8 +175,46 @@ compute_structural_traits <- function(tree, motifs) {
     AntFuc = antfucosed
   )
 
+}
+
+
+#' Compute user-defined structural glycan traits via subgraph isomorphism
+#'
+#' Evaluate custom glycan structural motifs within a parsed glycan tree.
+#' Each user-defined motif is represented as a parsed tree (`node` + `edge`),
+#' converted into an `igraph` structure, and matched against the full glycan
+#' using subgraph isomorphism (`igraph::count_subgraph_isomorphisms()`).
+#'
+#' @details
+#' This function allows end users to define their own glycan structural motifs—
+#' such as specific antenna patterns, branch-residue
+#' combinations—and quantify how often these motifs appear in a glycan.
+#' The output is a named numeric vector where names correspond to motif names.
+#'
+#' @param tree A parsed glycan tree from \code{\link{pGlyco3_to_tree}} or \code{\link{wurcs_to_tree}}.
+#'
+#' @param motifs Optional named list of user-defined motif trees.
+#'   Each motif must include:
+#'   \itemize{
+#'     \item `node`: character vector of residue codes
+#'     \item `edge`: edges describing motif topology
+#'   }
+#'
+#' @return
+#' A named numeric vector giving the count of each user-defined motif.
+#' Returns an empty vector if \code{motifs = NULL}.
+#'
+#'
+#' @keywords internal
+compute_userdefined_traits <- function(tree, motifs) {
+  res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
+  node <- setNames(tree$node, res_letters)
+
+  # use igraph to represent a glycan structure
+  g <- build_glycan_igraph(tree)
+
   # add user-defined structure
-  special_traits <- c()
+  ud_traits <- c()
   if(!is.null(motifs)) {
     n <- length(motifs)
     special_traits <- c()
@@ -197,16 +223,13 @@ compute_structural_traits <- function(tree, motifs) {
       g_sub <- build_glycan_igraph(motifs[[i]])
 
       n_sub <- igraph::count_subgraph_isomorphisms(g_sub, g, method = "vf2",
-                                           vertex.color1 = factor(V(g)$type),
-                                           vertex.color2 = factor(V(g_sub)$type),
-                                           edge.color1 = NULL,
-                                           edge.color2 = NULL)
-      special_traits[trait] <- n_sub
+                                                   vertex.color1 = factor(V(g)$type),
+                                                   vertex.color2 = factor(V(g_sub)$type),
+                                                   edge.color1 = NULL,
+                                                   edge.color2 = NULL)
+      ud_traits[trait] <- n_sub
     }
   }
 
-  c(common_traits, special_traits)
+  ud_traits
 }
-
-
-

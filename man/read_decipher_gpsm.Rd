@@ -7,43 +7,36 @@
 read_decipher_gpsm(gpsm_folder_dir)
 }
 \arguments{
-\item{gpsm_folder_dir}{A character scalar giving the path to a folder containing
-Glyco-Decipher GPSM result files (e.g. files ending with
+\item{gpsm_folder_dir}{The path to a folder containing Glyco-Decipher GPSM files (e.g. files ending with
 \code{"_GPSM_DatabaseGlycan.txt"}).}
 }
 \value{
-A data frame (or tibble) in long format with one row per
+A data frame in long format with one row per
 \code{Protein}–\code{Peptide}–\code{GlycanStructure}–\code{File}
 combination and the following columns:
 
 \itemize{
   \item \code{Protein} — protein identifier(s)
   \item \code{Peptide} — peptide sequence
-  \item \code{GlycanStructure} — glycan structural annotation from Decipher (WURCS 2.0)
+  \item \code{GlycanStructure} — glycan structural annotation (WURCS 2.0)
   \item \code{File} — raw file name
-  \item \code{count} — spectral count (number of GPSMs) for this combination
+  \item \code{Count} — spectral count (number of GPSMs) for this combination
 }
 
-The returned table is designed to be passed to functions such as
+The returned table is designed to be passed to
 \code{\link{build_trait_se}} for glycan trait computation.
 }
 \description{
-Read multiple Glyco-Decipher GPSM result files from a folder,
+Read multiple Glyco-Decipher GPSM files from a folder,
 merge them into a unified protein–peptide–glycan table, and attach
-glycan structures (WURCS 2.0) based on a glycan database.
+glycan structures (WURCS 2.0).
 }
 \details{
 This function assumes that the input folder contains one or more
-Glyco-Decipher GPSM result files, typically named with the suffix
-\code{"_GPSM_DatabaseGlycan.txt"}. For each file:
-
-\itemize{
-  \item GPSM records are read and collapsed by
-        \code{Protein}, \code{Peptide}, \code{GlycanID}, and \code{File}.
-  \item Protein identifiers are simplified to a pipe-separated string
-        of unique IDs (similar to \code{\link{read_pGlyco3_gpsm}}).
-}
-
+Glyco-Decipher GPSM files, typically named with the suffix
+\code{"_GPSM_DatabaseGlycan.txt"}. For each file,
+GPSM records are read and collapsed by \code{Protein}, \code{Peptide},
+\code{GlycanID}, \code{File}, and \code{Count}.
 All files are then combined into a single table, and glycan IDs are
 mapped to WURCS structures via the global \code{glycanDatabase} object.
 The final table uses a standardized glycan column name

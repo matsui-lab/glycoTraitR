@@ -19,41 +19,21 @@ gpsm <- read_pGlyco3_gpsm("pglyco3_full.txt")
 gpsm_dir <- "~/glycoTraitR/simulation/data/pGlyco3_related/pGlycoDB-GP-FDR-Pro-Quant-Site.txt"
 pGlyco3_gpsm <- read_pGlyco3_gpsm(gpsm_dir)
 
-# preprocess the decipher gpsm matrix
-gpsm_folder_dir <- "~/glycoTraitR/simulation/data/decipher_related/GPSM_mcp_2022_100433/"
-decipher_gpsm <- read_decipher_gpsm(gpsm_folder_dir)
-
 # obtain the summarized experiment object of trait matrices at the site / protein level
 meta <- readRDS("~/glycoTraitR/simulation/meta_mcp_2022_100433.rds")
 
-pGlyco3_gpsm; decipher_gpsm
+pGlyco3_gpsm
 ```
 
 
 ```{r}
-decipher_trait_se <- build_trait_se(
-  decipher_gpsm,
-  from = "decipher", 
-  motifs = NULL,
-  level = "protein",
-  meta = meta
-)
 pGlyco3_trait_se <- build_trait_se(
   pGlyco3_gpsm,
   from = "pGlyco3",
   motifs = NULL,
-  level = "protein",
+  level = "site",
   meta = meta
 )
-```
-
-# visualize the protein between 
-```{r}
-decipher_res <- analyze_trait_changes(
-  decipher_trait_se,
-  group_col = "Diagnosis",
-  group_levels = c(test = "Symptomatic", control = "Normal"),
-  min_psm = 20)
 
 pGlyco3_res <- analyze_trait_changes(
   pGlyco3_trait_se, 
@@ -61,37 +41,35 @@ pGlyco3_res <- analyze_trait_changes(
   group_levels = c(test = "Symptomatic", control = "Normal"),
   min_psm = 20)
 
-decipher_res
 pGlyco3_res
 ```
 
 ```{r}
-trait_level <- merge(
-  decipher_res[,1:2],
-  pGlyco3_res[,1:2],
-  by = c("trait", "level")
-)
-
-decipher_res %>% 
-  filter(trait %in% trait_level$trait) %>% 
-  filter(level %in% trait_level$level)
-pGlyco3_res %>%
-  filter(trait %in% trait_level$trait) %>% 
-  filter(level %in% trait_level$level)
+# trait_level <- merge(
+#   decipher_res[,1:2],
+#   pGlyco3_res[,1:2],
+#   by = c("trait", "level")
+# )
+# decipher_res %>% 
+#   filter(trait %in% trait_level$trait) %>% 
+#   filter(level %in% trait_level$level)
+# pGlyco3_res %>%
+#   filter(trait %in% trait_level$trait) %>% 
+#   filter(level %in% trait_level$level)
 ```
 
 # Visualization Plots
 ## histgram 
 ## boxplot 
 ```{r}
-trait_se <- decipher_trait_se
-i <- sample(nrow(decipher_res), 1)
-trait <- decipher_res[i,1]
-level <- decipher_res[i,2]
+trait_se <- pGlyco3_trait_se
+i <- sample(nrow(pGlyco3_res), 1)
+trait <- pGlyco3_res[i,1]
+level <- pGlyco3_res[i,2]
 
 # trait <- "Neu5Ac"; level <- "GABR2"
-trait <- "Antennas"; level <- "LAMP2"
-trait <- "HexNAc"; level <-	"CNTN1"
+# trait <- "Antennas"; level <- "LAMP2"
+# trait <- "HexNAc"; level <-	"CNTN1"
 gplots <- plot_trait_distribution(trait_se, 
                                   group_col = "Diagnosis", 
                                   group_levels = c(test = "Symptomatic", control = "Normal"), 

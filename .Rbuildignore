@@ -6,3 +6,5 @@
 ^simulation
 ^old_script
 ^LICENSE\.md$
+^doc$
+^Meta$

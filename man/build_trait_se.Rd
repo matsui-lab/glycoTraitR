@@ -2,126 +2,35 @@
 % Please edit documentation in R/trait_compute.R
 \name{build_trait_se}
 \alias{build_trait_se}
-\title{Generate peptide- or protein-level glycan trait-GPSM counts matrices as a SummarizedExperiment.}
+\title{Build a SummarizedExperiment of glycan trait matrices}
 \usage{
-build_trait_se(gpsm, from, user_defined_traits, level, meta)
+build_trait_se(gpsm, from, motifs = NULL, level, meta)
 }
 \arguments{
-\item{gpsm}{A data frame or tibble containing GPSM-level glycopeptide information.
-Must include `Protein`, `Peptide`, `File`, and columns required by
-`annotate_gpsm_with_traits()`.}
+\item{gpsm}{A GPSM table containing at least:
+`Protein`, `Peptide`, `GlycanStructure`, `File`, and `Count`.}
 
-\item{from}{A character string specifying the glycan annotation format used in the GPSM
-input. Valid values:
+\item{from}{Character; glycan format used in the GPSM input.
+One of `decipher` or `pGlyco3`.}
 
-* `"decipher"` — WURCS-formatted glycan structures
-* `"pGlyco3"` — pGlyco-format glycan structures}
+\item{motifs}{Optional named list of user-defined motif structures
+passed to \link{compute_glycan_traits}.}
 
-\item{user_defined_traits}{A named list specifying user-defined glycan structural motifs for trait
-detection. See `annotate_gpsm_with_traits()` for the structure and examples.}
+\item{level}{Summarization level. Either `site (peptide)` or `"protein"`.}
 
-\item{level}{A character string indicating the summarization level:
-
-* `"site"` — glycan traits summarized at peptide level
-* `"protein"` — glycan traits summarized at protein level
-
-Determines the row dimension of each assay matrix.}
-
-\item{meta}{A data frame describing sample-level metadata. Must contain a `file` column
-whose entries match the `File` column of `gpsm`. Additional metadata columns
-are preserved and attached to the resulting `colData`.}
+\item{meta}{Data frame of sample metadata with a column `file`
+matching `gpsm$File`.}
 }
 \value{
-A `SummarizedExperiment` object containing:
-
-* **assays** — named list of trait matrices (`trait × PSM`)
-* **rowData** — data frame containing peptides or proteins used as row labels
-* **colData** — metadata aligned to PSM identifiers
-
-Each PSM is assigned an artificial ID (`psm1`, `psm2`, …) to enforce unique
-column names in the assay matrices, even if identical glycopeptides appear
-in multiple files.
+A `SummarizedExperiment` where each assay is a glycan-trait
+  matrix (trait × PSM), `rowData` contains peptide/protein names,
+  and `colData` contains metadata aligned to PSMs.
 }
 \description{
-This function aggregates glycan trait annotations from a GPSM count table and
-constructs a `SummarizedExperiment` object containing trait-by-GPSM matrices.
-Glycan traits are first computed at the GPSM level,
-and are then summarized at either the glycosylation *site* level (peptide-based)
-or *protein* level. Each trait is represented as a matrix whose rows correspond
-to sites or proteins, and whose columns correspond to PSM identifiers.
-}
-\details{
-Construct a SummarizedExperiment Object Containing Glycan Trait Matrices
-
-
-The input `gpsm` must have glycopeptide-spectrum-match (GPSM) records containing:
-
-* **Protein** — protein identifiers
-* **Peptide** — peptide sequence (used as glycosylation site proxy)
-* **File** — sample or raw file name for linking PSMs to metadata
-* Any additional GPSM-level metadata
-
-Glycan traits are first appended using [`annotate_gpsm_with_traits()`], which parses
-glycan structures according to the search engine specification (`from`) and
-computes user-defined or default structural traits. Each PSM is assigned a
-unique `psm_id` to ensure correct construction of the assay matrices.
-
-## Trait Matrix Generation
-For each glycan trait column:
-
-1. The GPSM table is reshaped into a long format indexed by `psm_id`.
-2. A wide-format matrix is created where **rows correspond to either:**
-   * peptides (`level = "site"`), or
-   * proteins (`level = "protein"`)
-3. Columns correspond to unique PSM identifiers.
-4. Values represent trait intensities for each PSM.
-
-## Output Structure
-The returned `SummarizedExperiment` contains:
-
-* **assays** — a list of matrices, one per glycan trait
-* **rowData** — a data frame containing peptide or protein names
-* **colData** — sample-level metadata aligned to PSMs
-
-This format allows downstream operations such as differential analysis,
-tensor conversion, visualization, and multi-level trait modeling.
-}
-\examples{
-\dontrun{
-# Example GPSM table
-gpsm <- data.frame(
-  Protein = c("P1", "P2"),
-  Peptide = c("PEPTIDE1", "PEPTIDE2"),
-  GlycanStructure = c("WURCS=...", "WURCS=..."),
-  count = c(3, 1),
-  File = c("rawA", "rawB")
-)
-
-# Example metadata
-meta <- data.frame(
-  file = c("rawA", "rawB"),
-  condition = c("A", "B")
-)
-
-# Example user-defined traits
-user_traits <- list(
-  MotifA = list(node = c("H","N"), edge = "a-b")
-)
-
-# Construct peptide-level trait SE
-se <- build_trait_se(
-  gpsm,
-  from = "decipher",
-  user_defined_traits = user_traits,
-  level = "site",
-  meta = meta
-)
-
-se
-}
-
-}
-\seealso{
-* [`annotate_gpsm_with_traits()`] — compute GPSM-level glycan traits
-* `SummarizedExperiment::SummarizedExperiment`
+Convert a GPSM table into peptide- or protein-level glycan trait matrices
+and store them in a \code{SummarizedExperiment} object. Each trait becomes an assay
+matrix whose rows represent peptides or proteins, and whose columns
+represent individual GPSMs.
+This function provides a unified container for downstream analyses such as
+differential testing and visualization.
 }

@@ -1,72 +1,49 @@
 #' Differential analysis of glycan traits between experimental groups
 #'
 #' Perform group-wise statistical testing on glycan trait matrices stored in a
-#' `SummarizedExperiment` created by [`build_trait_se()`]. For each glycan
+#' SummarizedExperiment created by \code{\link{build_trait_se}}. For each glycan
 #' trait and each site/protein row, the function compares trait intensities
 #' across user-specified experimental groups using Welch’s t-test and
 #' Levene’s variance test.
 #'
 #' @details
-#' Each assay in `trait_se` represents a glycan trait matrix, with:
-#'
-#' * **rows** = glycopeptides (site-level) or proteins (protein-level)
-#' * **columns** = PSMs
-#'
-#' For each trait × feature combination:
-#'
-#' 1. Extract PSM-level trait intensities for samples belonging to the
-#'    specified `group_levels`.
-#' 2. Remove missing values.
-#' 3. Exclude cases where either group has fewer than `min_psm` PSMs.
-#' 4. Exclude all-zero traits (boolean-like traits).
-#' 5. Run:
-#'    * Welch two-sample t-test (`t.test`)
-#'    * Levene's variance test (`car::leveneTest`, median centered)
-#'
-#' A result is returned only if **either** test shows p < 0.05.
+#' Each assay in `trait_se` represents a glycan trait matrix.
+#' The rows as glycopeptides (site-level) or proteins (protein-level).
+#' The columns are GPSM count found in samples.
+#' For each trait × feature combination,
+#' Extract PSM-level trait intensities for samples belonging to the specified `group_levels`.
+#' Exclude traits where either group has fewer than `min_psm` GPSMs.
+#' Exclude all-zero traits (boolean-like traits)
+#' Run Welch two-sample t-test (`t.test`) and
+#' Levene's variance test (`car::leveneTest`, median centered).
+#' A result is returned only if either test shows p < 0.05.
 #'
 #' @param trait_se
-#' A `SummarizedExperiment` containing trait matrices (one assay per trait),
-#' typically returned by [`build_trait_se()`].
+#' A SummarizedExperiment containing trait matrices (one assay per trait),
+#' typically returned by \code{\link{build_trait_se}}.
 #'
 #' @param group_col
 #' The column name in `colData(trait_se)` defining sample group membership.
 #'
 #' @param group_levels
-#' Character vector specifying which values of `group_col` to compare.
-#' Usually a length-2 vector (e.g., `c("Control","Treatment")`).
+#' Character vector specifying which values of `group_col` to compare (e.g., `c("Control","Treatment")`).
 #'
 #' @param min_psm
 #' Minimum required PSM count per group for statistical testing.
-#' Default: `20`.
+#' Default = 20.
 #'
 #' @return
 #' A data frame of significant trait–site (or trait–protein) comparisons with:
+#'  \itemize{
+#'     \item trait  — glycan trait name
+#'     \item level  — site/protein identifier
+#'     \item l_pval — Levene test p-value
+#'     \item f_val  — Levene test F statistic
+#'     \item t_pval — Welch t-test p-value
+#'     \item t_val  — t-statistic
+#'   }
+#' Rows correspond only to significant comparisons (p < 0.05) for `l_pval` or `t_pval`.
 #'
-#' * `trait`  — glycan trait name
-#' * `level`  — site/protein identifier
-#' * `l_pval` — Levene test p-value
-#' * `f_val`  — Levene test F statistic
-#' * `t_pval` — Welch t-test p-value
-#' * `t_val`  — t-statistic
-#'
-#' Rows correspond only to significant comparisons (p < 0.05).
-#'
-#' @examples
-#' \dontrun{
-#' res <- analyze_trait_changes(
-#'   trait_se     = se,
-#'   group_col    = "condition",
-#'   group_levels = c("Control", "Treatment"),
-#'   min_psm      = 20
-#' )
-#' head(res)
-#' }
-#'
-#' @seealso
-#' * [`build_trait_se()`] — construct trait matrices
-#' * `car::leveneTest`
-#' * `stats::t.test`
 #'
 #' @importFrom pbapply pblapply
 #' @importFrom SummarizedExperiment assays colData rowData

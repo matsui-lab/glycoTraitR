@@ -1,0 +1,71 @@
+---
+title: "Quick Start Guide"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick Start Guide}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r include=FALSE}
+library(glycoTraitR)
+```
+
+# Quick Start
+
+The example uses publicly available pGlyco3 GPSM data hosted on **Zenodo**.
+
+## 1. Load example data
+
+```{r}
+# The following is an example file from Zenodo
+# url <- "https://zenodo.org/records/17756830/files/pGlycoDB-GP-FDR-Pro-Quant-Site.txt?download=1"
+# download.file(url, "pGlyco3_GPSM.txt", mode = "wb")
+# gpsm <- read_pGlyco3_gpsm("pGlyco3_GPSM.txt")
+
+# meta_url <- "https://zenodo.org/records/17759790/files/meta_mcp_2022_100433.rds?download=1"
+# download.file(meta_url, "meta_example.rds", mode = "wb")
+# meta <- readRDS("meta_example.rds")
+
+# The following is a smaller toy example files from package
+path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt", package = "glycoTraitR")
+gpsm_toyexample <- read_pGlyco3_gpsm(path)
+data("meta_toyexample")
+```
+
+
+## 2. Build glycan trait matrices
+```{r}
+trait_se <- build_trait_se(
+  gpsm_toyexample,
+  from = "pGlyco3",
+  motifs = NULL,
+  level = "protein",
+  meta = meta_toyexample
+)
+```
+
+## 3. Differential analysis
+```{r}
+changed_traits <- analyze_trait_changes(
+  trait_se     = trait_se,
+  group_col    = "Diagnosis",
+  group_levels = c("Normal", "Symptomatic"),
+  min_psm      = 20
+)
+head(changed_traits)
+```
+
+## 4. Trait distribution visualization
+```{r}
+p <- plot_trait_distribution(
+  trait_se     = trait_se,
+  group_col    = "Diagnosis",
+  group_levels = c("Normal", "Symptomatic"),
+  trait_name   = "Hexose",
+  feature      = "MOG"
+)
+
+p$p_hist
+p$p_box
+```

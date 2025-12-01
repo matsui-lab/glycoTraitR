@@ -1,11 +1,24 @@
 Package: glycoTraitR
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Compute and analyze the glycan structrual traits from GPSM data.
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R: 
+    c(
+      person("Bingyuan", "Zhang",
+             email = "zhang.bingyuan.w8@f.mail.nagoya-u.ac.jp",
+             role = c("aut", "cre"),
+             comment = c(ORCID = "0000-0002-4892-323X"))
+    )
+Maintainer: The package maintainer <zhang.bingyuan.w8@f.mail.nagoya-u.ac.jp>
+Description: 
+    Tools for parsing glycan structures, computing monosaccharide 
+    composition and structural traits, and performing differential 
+    analysis of glycan heterogeneity from glycopeptide-spectrum-match (GPSM) 
+    results produced by the pGlyco3 or Glyco-Decipher search engines. 
+    The package builds trait-by-PSM matrices stored in a SummarizedExperiment 
+    object, supports user-defined structural motifs, and provides plotting 
+    utilities for visualization and interpretation of glycan trait changes.
+URL: https://github.com/matsui-lab/glycoTraitR
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -13,8 +26,13 @@ Imports:
     igraph,
     purrr,
     stringr,
-    tidyr
+    tidyr,
+    SummarizedExperiment, 
+    pbapply,
+    car,
+    ggplot2
 RoxygenNote: 7.3.1
+VignetteBuilder: knitr
 Depends: 
-    dplyr,
-    R (>= 2.10)
+    R (>= 2.10),
+    dplyr

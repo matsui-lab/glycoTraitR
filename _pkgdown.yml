@@ -1,0 +1,12 @@
+navbar:
+  structure:
+    left:
+      - home
+      - quickstart
+      - reference
+      - articles
+
+  components:
+    quickstart:
+      text: "Quick Start"
+      href: articles/quick_start.html
