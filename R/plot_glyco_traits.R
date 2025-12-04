@@ -8,11 +8,24 @@
 #' @param g
 #' An igraph object representing a glycan tree from \code{\link{build_glycan_igraph}}.
 #'
-#'
-#'
 #' @return A glycan topology plot is drawn as a side effect.
 #'
 #' @import igraph
+#'
+#' @examples
+#' # Example: parse a pGlyco3-style glycan expression into a tree
+#' pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+#'
+#' # Convert to glycan tree structure
+#' tree <- pGlyco3_to_tree(pGlyco_expr)
+#'
+#' # Explore parsed nodes and edges
+#' tree$node
+#' tree$edge
+#'
+#' # Build igraph representation
+#' g <- build_glycan_igraph(tree)
+#' plot_glycan_tree(g)
 #' @export
 plot_glycan_tree <- function(g) {
   plot(
@@ -62,6 +75,51 @@ plot_glycan_tree <- function(g) {
 #'
 #' @import ggplot2
 #' @importFrom SummarizedExperiment assays colData rowData
+#'
+#' @examples
+#' # Load the toy GPSM table exported by pGlyco3 (included in the package)
+#' path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
+#'   package = "glycoTraitR"
+#' )
+#' gpsm_toyexample <- read_pGlyco3_gpsm(path)
+#'
+#' # Load the accompanying toy metadata
+#' data("meta_toyexample")
+#'
+#' # Build a protein-level glycan trait SummarizedExperiment object
+#' trait_se <- build_trait_se(
+#'   gpsm = gpsm_toyexample,
+#'   from = "pGlyco3",
+#'   motifs = NULL,
+#'   level = "protein",
+#'   meta = meta_toyexample
+#' )
+#'
+#' # Identify glycan traits significantly changed between two groups
+#' changed_traits <- analyze_trait_changes(
+#'   trait_se     = trait_se,
+#'   group_col    = "Diagnosis",
+#'   group_levels = c("Normal", "Symptomatic"),
+#'   min_psm      = 20
+#' )
+#'
+#' # Extract one trait name and one protein/site feature to visualize
+#' trait_name <- changed_traits$trait[1]
+#' feature <- changed_traits$level[1]
+#'
+#' # Plot the distribution of this selected trait
+#' p <- plot_trait_distribution(
+#'   trait_se     = trait_se,
+#'   group_col    = "Diagnosis",
+#'   group_levels = c("Normal", "Symptomatic"),
+#'   trait_name   = trait_name,
+#'   feature      = feature
+#' )
+#'
+#' # Show histogram and boxplot
+#' p$p_hist
+#' p$p_box
+#'
 #' @export
 plot_trait_distribution <- function(trait_se,
                                     group_col,

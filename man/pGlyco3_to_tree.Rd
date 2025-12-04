@@ -33,4 +33,12 @@ Each residue is assigned a synthetic node label
 (\code{a}, \code{b}, \code{c}, …), ensuring compatibility with
 graph-based trait extraction.
 }
+\examples{
+# Example: parse a pGlyco3-style glycan expression into a tree
+pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+# Convert to glycan tree structure
+tree <- pGlyco3_to_tree(pGlyco_expr)
+tree
+
+}
 \keyword{internal}

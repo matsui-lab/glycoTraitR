@@ -43,10 +43,9 @@ The final table uses a standardized glycan column name
 \code{GlycanStructure} for compatibility with downstream functions.
 }
 \examples{
-\dontrun{
-gpsm_table <- read_decipher_gpsm("path/to/decipher_folder/")
-head(gpsm_table)
-}
+folder <- system.file("extdata", "decipher_toyexample", package = "glycoTraitR")
+gpsm <- read_decipher_gpsm(folder)
+head(gpsm)
 
 }
 \seealso{

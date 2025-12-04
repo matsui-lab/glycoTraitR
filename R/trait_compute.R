@@ -11,6 +11,36 @@
 #'
 #' @return A named list of numeric trait values.
 #'
+#' @examples
+#' # Example: parse a pGlyco3-style glycan expression into a tree
+#' pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+#'
+#' # Convert to glycan tree structure
+#' tree <- pGlyco3_to_tree(pGlyco_expr)
+#'
+#' # Explore parsed nodes and edges
+#' tree$node
+#' tree$edge
+#'
+#' # Build igraph representation
+#' g <- build_glycan_igraph(tree)
+#' plot_glycan_tree(g)
+#'
+#' # Define user motifs for trait computation
+#' user_motifs <- list(
+#'   LinearH3 = list(
+#'     node = c("H", "H", "H"),
+#'     edge = c("a-b", "b-c")
+#'   ),
+#'   FucBranch = list(
+#'     node = c("H", "N", "F"),
+#'     edge = c("a-b", "b-c")
+#'   )
+#' )
+#'
+#' # Compute glycan structural traits
+#' compute_glycan_traits(tree, motifs = user_motifs)
+#'
 #' @keywords internal
 compute_glycan_traits <- function(tree, motifs) {
   cnt_trait <- count_residues(tree)
@@ -37,6 +67,7 @@ compute_glycan_traits <- function(tree, motifs) {
 #' @return A modified GPSM table with appended trait columns.
 #'
 #' @keywords internal
+#' @noRd
 annotate_traits_to_gpsm <- function(gpsm, from, motifs) {
   # Split key GPSM columns and other metadata columns
   glycan <- unique(gpsm$GlycanStructure)
@@ -98,6 +129,29 @@ annotate_traits_to_gpsm <- function(gpsm, from, motifs) {
 #' @importFrom tidyr pivot_wider
 #' @importFrom SummarizedExperiment assays colData rowData
 #'
+#' @examples
+#' # Load toy GPSM table exported by pGlyco3
+#' path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
+#'   package = "glycoTraitR"
+#' )
+#' gpsm_toyexample <- read_pGlyco3_gpsm(path)
+#'
+#' # Load toy metadata for summarization
+#' data("meta_toyexample")
+#'
+#' # Build glycan trait SummarizedExperiment at protein level
+#' trait_se <- build_trait_se(
+#'   gpsm = gpsm_toyexample,
+#'   from = "pGlyco3",
+#'   motifs = NULL,
+#'   level = "protein",
+#'   meta = meta_toyexample
+#' )
+#'
+#' # Inspect assay names and dimensions
+#' SummarizedExperiment::assayNames(trait_se)
+#' dim(trait_se)
+#'
 #' @export
 build_trait_se <- function(gpsm, from, motifs = NULL, level, meta) {
   message("adding traits to the gpsm matrix")
@@ -116,7 +170,7 @@ build_trait_se <- function(gpsm, from, motifs = NULL, level, meta) {
   traits <- setdiff(colnames(gpsm_mat), c("Protein", "Peptide", "File", "psm_id"))
   traits_len <- length(traits)
   get_se_level_trait <- function(i) {
-    out <- select(gpsm_mat, sel, "psm_id", traits[i])
+    out <- select(gpsm_mat, all_of(sel), "psm_id", traits[i])
     out <- tidyr::pivot_wider(data = out, names_from = psm_id, values_from = traits[i])
     out <- as.data.frame(out)
     row.names(out) <- out[[1]]

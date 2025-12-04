@@ -34,3 +34,27 @@ represent individual GPSMs.
 This function provides a unified container for downstream analyses such as
 differential testing and visualization.
 }
+\examples{
+# Load toy GPSM table exported by pGlyco3
+path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
+  package = "glycoTraitR"
+)
+gpsm_toyexample <- read_pGlyco3_gpsm(path)
+
+# Load toy metadata for summarization
+data("meta_toyexample")
+
+# Build glycan trait SummarizedExperiment at protein level
+trait_se <- build_trait_se(
+  gpsm = gpsm_toyexample,
+  from = "pGlyco3",
+  motifs = NULL,
+  level = "protein",
+  meta = meta_toyexample
+)
+
+# Inspect assay names and dimensions
+SummarizedExperiment::assayNames(trait_se)
+dim(trait_se)
+
+}

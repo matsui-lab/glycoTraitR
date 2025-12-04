@@ -36,10 +36,13 @@ Imports:
     ggplot2
 Suggests:
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0),
+    BioStyle
 biocViews: Proteomics, MassSpectrometry, Visualization, Software
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr
 BugReports: https://github.com/matsui-lab/glycoTraitR/issues
 Depends: 
     R (>= 4.4.0)
+Config/testthat/edition: 3

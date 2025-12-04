@@ -48,10 +48,12 @@ The output of this function is typically used as the input for
 \code{\link{build_trait_se}}.
 }
 \examples{
-\dontrun{
-gpsm_table <- read_pGlyco3_gpsm("path/to/pGlycoDB-GP-FDR-Pro-Quant-Site.txt")
-head(gpsm_table)
-}
+# Load toy example data included in glycoTraitR
+path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
+  package = "glycoTraitR"
+)
+gpsm <- read_pGlyco3_gpsm(path)
+head(gpsm)
 
 }
 \seealso{

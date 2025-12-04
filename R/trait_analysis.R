@@ -44,9 +44,36 @@
 #'   }
 #' Rows correspond only to significant comparisons (p < 0.05) for `l_pval` or `t_pval`.
 #'
-#'
 #' @importFrom pbapply pblapply
 #' @importFrom SummarizedExperiment assays colData rowData
+#'
+#' @examples
+#' # Load toy pGlyco3 GPSM data included with the package
+#' path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
+#'   package = "glycoTraitR"
+#' )
+#' gpsm_toyexample <- read_pGlyco3_gpsm(path)
+#'
+#' # Load accompanying toy metadata
+#' data("meta_toyexample")
+#'
+#' # Build glycan trait SummarizedExperiment at the protein level
+#' trait_se <- build_trait_se(
+#'   gpsm = gpsm_toyexample,
+#'   from = "pGlyco3",
+#'   motifs = NULL,
+#'   level = "protein",
+#'   meta = meta_toyexample
+#' )
+#'
+#' # Identify glycan traits significantly changed between groups
+#' changed_traits <- analyze_trait_changes(
+#'   trait_se     = trait_se,
+#'   group_col    = "Diagnosis",
+#'   group_levels = c("Normal", "Symptomatic"),
+#'   min_psm      = 20
+#' )
+#' changed_traits
 #'
 #' @export
 analyze_trait_changes <- function(trait_se, group_col, group_levels, min_psm = 20) {
@@ -106,5 +133,5 @@ analyze_trait_changes <- function(trait_se, group_col, group_levels, min_psm = 2
     }
   }
   res_list <- pbapply::pblapply(seq_len(nrow(pairs)), trait_testing)
-  do.call(rbind, res_list[!sapply(res_list, is.null)])
+  do.call(rbind, res_list[!vapply(res_list, is.null, logical(1))])
 }

@@ -27,4 +27,13 @@ The resulting graph contains the following vertex attributes:
   \item \code{is_root} — TRUE if the vertex is the structural root
 }
 }
-\keyword{internal}
+\examples{
+# Example: parse a pGlyco3 monosaccharide expression into a glycan tree
+pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+
+# Convert expression into a parsed tree structure
+tree <- pGlyco3_to_tree(pGlyco_expr)
+g <- build_glycan_igraph(tree)
+g
+
+}

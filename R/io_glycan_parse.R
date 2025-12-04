@@ -80,6 +80,12 @@ WURCS_RES_MAP <- c(
 #'   \item \code{edge}: character vector of edges in "A-B" format
 #' }
 #'
+#' @examples
+#' # Example WURCS glycan string
+#' w <- "WURCS=2.0/4,9,8/[u2122h_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5]/1-2-3-4-4-4-4-4-4/a4-b1_b4-c1_c3-d1_c6-f1_d2-e1_f3-g1_f6-h1_h2-i1"
+#' tree <- wurcs_to_tree(w)
+#' tree
+#'
 #' @keywords internal
 wurcs_to_tree <- function(w) {
   core <- sub("^WURCS=[^/]+/", "", w)
@@ -145,6 +151,13 @@ wurcs_to_tree <- function(w) {
 #'   \item \code{node}: character vector of residue types
 #'   \item \code{edge}: character vector of edges in "a-b" format
 #' }
+#'
+#' @examples
+#' # Example: parse a pGlyco3-style glycan expression into a tree
+#' pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+#' # Convert to glycan tree structure
+#' tree <- pGlyco3_to_tree(pGlyco_expr)
+#' tree
 #'
 #' @keywords internal
 pGlyco3_to_tree <- function(expr) {

@@ -20,4 +20,35 @@ structural traits (see \code{\link{compute_structural_traits}}), and
 user-defined motifs (see \code{\link{compute_userdefined_traits}})
 into a unified trait vector.
 }
+\examples{
+# Example: parse a pGlyco3-style glycan expression into a tree
+pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+
+# Convert to glycan tree structure
+tree <- pGlyco3_to_tree(pGlyco_expr)
+
+# Explore parsed nodes and edges
+tree$node
+tree$edge
+
+# Build igraph representation
+g <- build_glycan_igraph(tree)
+plot_glycan_tree(g)
+
+# Define user motifs for trait computation
+user_motifs <- list(
+  LinearH3 = list(
+    node = c("H", "H", "H"),
+    edge = c("a-b", "b-c")
+  ),
+  FucBranch = list(
+    node = c("H", "N", "F"),
+    edge = c("a-b", "b-c")
+  )
+)
+
+# Compute glycan structural traits
+compute_glycan_traits(tree, motifs = user_motifs)
+
+}
 \keyword{internal}

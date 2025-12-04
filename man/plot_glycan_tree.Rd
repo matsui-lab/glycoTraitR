@@ -17,3 +17,18 @@ Visualize a glycan structure encoded as an igraph object produced by
 \code{\link{build_glycan_igraph}}. This plot is mainly intended for inspecting
 glycan topology (branching, residue types, connectivity).
 }
+\examples{
+# Example: parse a pGlyco3-style glycan expression into a tree
+pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+
+# Convert to glycan tree structure
+tree <- pGlyco3_to_tree(pGlyco_expr)
+
+# Explore parsed nodes and edges
+tree$node
+tree$edge
+
+# Build igraph representation
+g <- build_glycan_igraph(tree)
+plot_glycan_tree(g)
+}

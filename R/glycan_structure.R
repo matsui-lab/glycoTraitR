@@ -17,7 +17,16 @@
 #'
 #' @return A directed `igraph` object representing the glycan structure.
 #'
-#' @keywords internal
+#' @examples
+#' # Example: parse a pGlyco3 monosaccharide expression into a glycan tree
+#' pGlyco_expr <- "(N(N(H(H(H))(H(H)(H)(H(H))))))"
+#'
+#' # Convert expression into a parsed tree structure
+#' tree <- pGlyco3_to_tree(pGlyco_expr)
+#' g <- build_glycan_igraph(tree)
+#' g
+#'
+#' @export
 build_glycan_igraph <- function(tree) {
   # set nodes as a,b,c...
   ids <- c(letters, LETTERS)[seq_along(tree$node)]
@@ -77,6 +86,7 @@ build_glycan_igraph <- function(tree) {
 #'   `GlycanSize`, `Hexose`, `HexNAc`, `Neu5Ac`, `Neu5Gc`, `Fucose`
 #'
 #' @keywords internal
+#' @noRd
 count_residues <- function(tree) {
   c(
     GlycanSize = length(tree$node),
@@ -87,7 +97,6 @@ count_residues <- function(tree) {
     Fucose = sum(tree$node == "F")
   )
 }
-
 
 #' Compute structural glycan traits from an igraph glycan tree
 #'
@@ -108,6 +117,7 @@ count_residues <- function(tree) {
 #' user-defined motif counts
 #'
 #' @keywords internal
+#' @noRd
 compute_structural_traits <- function(tree) {
   res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
   node <- setNames(tree$node, res_letters)
@@ -196,8 +206,8 @@ compute_structural_traits <- function(tree) {
 #' A named numeric vector giving the count of each user-defined motif.
 #' Returns an empty vector if \code{motifs = NULL}.
 #'
-#'
 #' @keywords internal
+#' @noRd
 compute_userdefined_traits <- function(tree, motifs) {
   res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
   node <- setNames(tree$node, res_letters)

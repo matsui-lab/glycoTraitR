@@ -48,3 +48,32 @@ Run Welch two-sample t-test (`t.test`) and
 Levene's variance test (`car::leveneTest`, median centered).
 A result is returned only if either test shows p < 0.05.
 }
+\examples{
+# Load toy pGlyco3 GPSM data included with the package
+path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
+  package = "glycoTraitR"
+)
+gpsm_toyexample <- read_pGlyco3_gpsm(path)
+
+# Load accompanying toy metadata
+data("meta_toyexample")
+
+# Build glycan trait SummarizedExperiment at the protein level
+trait_se <- build_trait_se(
+  gpsm = gpsm_toyexample,
+  from = "pGlyco3",
+  motifs = NULL,
+  level = "protein",
+  meta = meta_toyexample
+)
+
+# Identify glycan traits significantly changed between groups
+changed_traits <- analyze_trait_changes(
+  trait_se     = trait_se,
+  group_col    = "Diagnosis",
+  group_levels = c("Normal", "Symptomatic"),
+  min_psm      = 20
+)
+changed_traits
+
+}

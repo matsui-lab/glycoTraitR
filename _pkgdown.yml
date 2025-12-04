@@ -4,9 +4,12 @@ navbar:
       - home
       - quickstart
       - reference
-      - articles
 
   components:
     quickstart:
       text: "Quick Start"
-      href: articles/quick_start.html
+      href: quick_start.html
+
+articles:
+  index: ~
+  sections: []

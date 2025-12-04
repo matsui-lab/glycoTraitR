@@ -44,10 +44,12 @@
 #' \code{\link{build_trait_se}}
 #'
 #' @examples
-#' \dontrun{
-#' gpsm_table <- read_pGlyco3_gpsm("path/to/pGlycoDB-GP-FDR-Pro-Quant-Site.txt")
-#' head(gpsm_table)
-#' }
+#' # Load toy example data included in glycoTraitR
+#' path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
+#'   package = "glycoTraitR"
+#' )
+#' gpsm <- read_pGlyco3_gpsm(path)
+#' head(gpsm)
 #'
 #' @importFrom dplyr select group_by summarise n
 #' @importFrom stringr str_extract_all
@@ -61,7 +63,7 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
   input$Protein <- input$Protein %>%
     str_extract_all("[A-Z0-9]+(?=_)") %>%
     lapply(unique) %>%
-    sapply(function(x) paste(x, collapse = "|"))
+    vapply(function(x) paste(x, collapse = "|"), FUN.VALUE = character(1))
   gpsm_table <- input %>%
     group_by(Protein, Peptide, GlycanStructure, File) %>%
     summarise(Count = n(), .groups = "drop")
@@ -110,10 +112,9 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
 #' \code{\link{build_trait_se}}
 #'
 #' @examples
-#' \dontrun{
-#' gpsm_table <- read_decipher_gpsm("path/to/decipher_folder/")
-#' head(gpsm_table)
-#' }
+#' folder <- system.file("extdata", "decipher_toyexample", package = "glycoTraitR")
+#' gpsm <- read_decipher_gpsm(folder)
+#' head(gpsm)
 #'
 #' @importFrom dplyr select group_by summarise bind_rows n
 #' @importFrom stringr str_extract_all str_remove
@@ -134,7 +135,7 @@ read_decipher_gpsm <- function(gpsm_folder_dir) {
     psm_count$Protein <- psm_count$Protein %>%
       str_extract_all("[A-Z0-9]+(?=_)") %>%
       lapply(unique) %>%
-      sapply(function(x) paste(x, collapse = "|"))
+      vapply(function(x) paste(x, collapse = "|"), FUN.VALUE = character(1))
 
     psm_count
   }
