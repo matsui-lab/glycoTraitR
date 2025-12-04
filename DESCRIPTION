@@ -38,7 +38,7 @@ Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
-    BioStyle
+    BiocStyle
 biocViews: Proteomics, MassSpectrometry, Visualization, Software
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr

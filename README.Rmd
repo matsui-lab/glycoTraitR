@@ -43,8 +43,9 @@ It provides a streamlined workflow for:
 ## Download Package
 
 ```{r eval=FALSE}
-# install.packages("devtools")
-devtools::install_github("matsui-lab/glycoTraitR")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+BiocManager::install("matsui-lab/glycoTraitR")
 ```
 
 ## Package Workflow
