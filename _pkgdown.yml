@@ -8,8 +8,4 @@ navbar:
   components:
     quickstart:
       text: "Quick Start"
-      href: quick_start.html
-
-articles:
-  index: ~
-  sections: []
+      href: articles/quick_start.html
