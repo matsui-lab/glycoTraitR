@@ -19,7 +19,6 @@
 #'
 #' @keywords internal
 build_glycan_igraph <- function(tree) {
-
   # set nodes as a,b,c...
   ids <- c(letters, LETTERS)[seq_along(tree$node)]
   vtab <- data.frame(
@@ -37,12 +36,12 @@ build_glycan_igraph <- function(tree) {
 
   # from root a to decide direction
   bfs_res <- igraph::bfs(g0, root = "a", father = TRUE)
-  father  <- setNames(igraph::V(g0)$name[bfs_res$father], igraph::V(g0)$name)
-  father  <- father[!is.na(father)]
+  father <- setNames(igraph::V(g0)$name[bfs_res$father], igraph::V(g0)$name)
+  father <- father[!is.na(father)]
 
   directed_df <- data.frame(
     from = father,
-    to   = names(father),
+    to = names(father),
     stringsAsFactors = FALSE
   )
 
@@ -79,12 +78,14 @@ build_glycan_igraph <- function(tree) {
 #'
 #' @keywords internal
 count_residues <- function(tree) {
-  c(GlycanSize = length(tree$node),
+  c(
+    GlycanSize = length(tree$node),
     Hexose = sum(tree$node == "H"),
     HexNAc = sum(tree$node == "N"),
     Neu5Ac = sum(tree$node == "A"),
     Neu5Gc = sum(tree$node == "G"),
-    Fucose = sum(tree$node == "F"))
+    Fucose = sum(tree$node == "F")
+  )
 }
 
 
@@ -110,21 +111,16 @@ count_residues <- function(tree) {
 compute_structural_traits <- function(tree) {
   res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
   node <- setNames(tree$node, res_letters)
-
   # use igraph to represent a glycan structure
   g <- build_glycan_igraph(tree)
-
   # corefucosed
   kids_of_a <- igraph::neighbors(g, "a", mode = "out")
   corefucosed <- as.integer(any(node[kids_of_a$name] == "F"))
-
   # antfucosed
   antfucosed <- as.integer((sum(node[kids_of_a$name] == "F") - corefucosed) > 0)
 
-  # find core mannose (N(N("H")))
   coreman <- names(node[node == "H"][1])
-
-  if(!is.na(coreman)){
+  if (!is.na(coreman)) {
     # bisecting
     kids_of_coreman <- igraph::neighbors(g, coreman, mode = "out")$name
     cond1 <- length(kids_of_coreman) == 3
@@ -135,8 +131,11 @@ compute_structural_traits <- function(tree) {
     # number of branches
     branch_man <- node[kids_of_coreman] == "H"
     branch_man <- names(branch_man)[branch_man]
-    ant_roots <- lapply(branch_man, function(x)
-      igraph::neighbors(g, x, mode = "out")) %>% unlist %>% names()
+    ant_roots <- lapply(branch_man, function(x) {
+      igraph::neighbors(g, x, mode = "out")
+    }) %>%
+      unlist() %>%
+      names()
     ant_cnt <- sum(node[ant_roots] == "N")
 
     # complex
@@ -153,7 +152,7 @@ compute_structural_traits <- function(tree) {
     kids_of_each_ant <- lapply(ant_roots, function(x) {
       sub <- igraph::subcomponent(g, x, mode = "out")
       all(node[sub$name] == "H")
-    }) %>% unlist
+    }) %>% unlist()
     cond1 <- any(kids_of_each_ant)
     cond2 <- ant_cnt >= 2
     hybrid <- ifelse(cond1 & cond2, 1, 0)
@@ -164,17 +163,10 @@ compute_structural_traits <- function(tree) {
     highman <- 0
     hybrid <- 0
   }
-
   c(
-    Antennas = ant_cnt,
-    Bisect = bisecting,
-    Complex = complex,
-    HighMan = highman,
-    Hybrid = hybrid,
-    CoreFuc = corefucosed,
-    AntFuc = antfucosed
+    Antennas = ant_cnt, Bisect = bisecting, Complex = complex,
+    HighMan = highman, Hybrid = hybrid, CoreFuc = corefucosed, AntFuc = antfucosed
   )
-
 }
 
 
@@ -215,18 +207,19 @@ compute_userdefined_traits <- function(tree, motifs) {
 
   # add user-defined structure
   ud_traits <- c()
-  if(!is.null(motifs)) {
+  if (!is.null(motifs)) {
     n <- length(motifs)
     special_traits <- c()
-    for(i in 1:n) {
+    for (i in seq_len(n)) {
       trait <- names(motifs)[i]
       g_sub <- build_glycan_igraph(motifs[[i]])
-
-      n_sub <- igraph::count_subgraph_isomorphisms(g_sub, g, method = "vf2",
-                                                   vertex.color1 = factor(V(g)$type),
-                                                   vertex.color2 = factor(V(g_sub)$type),
-                                                   edge.color1 = NULL,
-                                                   edge.color2 = NULL)
+      n_sub <- igraph::count_subgraph_isomorphisms(g_sub, g,
+        method = "vf2",
+        vertex.color1 = factor(V(g)$type),
+        vertex.color2 = factor(V(g_sub)$type),
+        edge.color1 = NULL,
+        edge.color2 = NULL
+      )
       ud_traits[trait] <- n_sub
     }
   }

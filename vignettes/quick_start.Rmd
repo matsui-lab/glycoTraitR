@@ -11,11 +11,11 @@ vignette: >
 library(glycoTraitR)
 ```
 
-## Quick Start
+# Quick Start
 
 The example uses publicly available pGlyco3 GPSM data hosted on **Zenodo**.
 
-### 1. Load example data
+## 1. Load example data
 
 ```{r}
 # The following is an example file from Zenodo
@@ -34,7 +34,7 @@ data("meta_toyexample")
 ```
 
 
-### 2. Build glycan trait matrices
+## 2. Build glycan trait matrices
 ```{r}
 trait_se <- build_trait_se(
   gpsm_toyexample,
@@ -45,7 +45,7 @@ trait_se <- build_trait_se(
 )
 ```
 
-### 3. Differential analysis
+## 3. Differential analysis
 ```{r}
 changed_traits <- analyze_trait_changes(
   trait_se     = trait_se,
@@ -56,7 +56,7 @@ changed_traits <- analyze_trait_changes(
 head(changed_traits)
 ```
 
-### 4. Trait distribution visualization
+## 4. Trait distribution visualization
 ```{r}
 p <- plot_trait_distribution(
   trait_se     = trait_se,
@@ -69,3 +69,9 @@ p <- plot_trait_distribution(
 p$p_hist
 p$p_box
 ```
+
+
+```{r session-info, echo=FALSE}
+sessionInfo()
+```
+

@@ -49,7 +49,7 @@
 #' head(gpsm_table)
 #' }
 #'
-#' @importFrom dplyr select group_by summarise
+#' @importFrom dplyr select group_by summarise n
 #' @importFrom stringr str_extract_all
 #' @importFrom magrittr %>%
 #'
@@ -115,7 +115,7 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
 #' head(gpsm_table)
 #' }
 #'
-#' @importFrom dplyr select group_by summarise bind_rows
+#' @importFrom dplyr select group_by summarise bind_rows n
 #' @importFrom stringr str_extract_all str_remove
 #' @importFrom magrittr %>%
 #'
@@ -131,7 +131,7 @@ read_decipher_gpsm <- function(gpsm_folder_dir) {
       group_by(Protein, Peptide, GlycanID, File) %>%
       summarise(Count = n(), .groups = "drop")
 
-    psm_count$Protein <-  psm_count$Protein %>%
+    psm_count$Protein <- psm_count$Protein %>%
       str_extract_all("[A-Z0-9]+(?=_)") %>%
       lapply(unique) %>%
       sapply(function(x) paste(x, collapse = "|"))
@@ -145,7 +145,7 @@ read_decipher_gpsm <- function(gpsm_folder_dir) {
   ind <- match(gpsm_table$GlycanID, glycanDatabase$GlycanID)
   gpsm_table$GlycanID <- glycanDatabase$StructureInformation[ind]
   # Rename the colnames
-  colnames(gpsm_table)[1:3] <- c("Protein", "Peptide", "GlycanStructure")
+  colnames(gpsm_table)[seq_len(3)] <- c("Protein", "Peptide", "GlycanStructure")
 
   gpsm_table
 }

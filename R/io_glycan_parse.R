@@ -81,16 +81,16 @@ WURCS_RES_MAP <- c(
 #' }
 #'
 #' @keywords internal
-wurcs_to_tree <- function(w){
+wurcs_to_tree <- function(w) {
   core <- sub("^WURCS=[^/]+/", "", w)
 
   parts <- character()
   cur <- ""
   depth <- 0L
-  for(ch in strsplit(core, "")[[1]]){
+  for (ch in strsplit(core, "")[[1]]) {
     if (ch == "[") depth <- depth + 1L
     if (ch == "]") depth <- depth - 1L
-    if (ch == "/" && depth == 0L){
+    if (ch == "/" && depth == 0L) {
       parts <- c(parts, cur)
       cur <- ""
     } else {
@@ -100,13 +100,15 @@ wurcs_to_tree <- function(w){
   parts <- c(parts, cur)
 
   ## UniqueRES --------
-  res_raw  <- regmatches(parts[2],
-                         gregexpr("\\[[^]]+\\]", parts[2], perl = TRUE))[[1]]
+  res_raw <- regmatches(
+    parts[2],
+    gregexpr("\\[[^]]+\\]", parts[2], perl = TRUE)
+  )[[1]]
   res_raw <- WURCS_RES_MAP[res_raw]
 
   ## RES-Sequence -------
-  res_idx  <- as.integer(strsplit(parts[3], "-", fixed = TRUE)[[1]])
-  node  <- res_raw[res_idx]
+  res_idx <- as.integer(strsplit(parts[3], "-", fixed = TRUE)[[1]])
+  node <- res_raw[res_idx]
 
   ## LIN --------
   edge <- unlist(strsplit(parts[4], "_", fixed = TRUE))
@@ -170,5 +172,3 @@ pGlyco3_to_tree <- function(expr) {
   }
   list(node = node, edge = edge)
 }
-
-

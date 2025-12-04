@@ -49,32 +49,23 @@
 #' @importFrom SummarizedExperiment assays colData rowData
 #'
 #' @export
-analyze_trait_changes <- function(trait_se,
-                                  group_col,
-                                  group_levels,
-                                  min_psm = 20) {
-
+analyze_trait_changes <- function(trait_se, group_col, group_levels, min_psm = 20) {
   trait_list <- assays(trait_se)
-  col_data   <- colData(trait_se)
-  row_data   <- rowData(trait_se)
+  col_data <- colData(trait_se)
+  row_data <- rowData(trait_se)
 
-  n_level   <- nrow(trait_list[[1]])
+  n_level <- nrow(trait_list[[1]])
   trait_len <- length(trait_list)
 
-  if (! group_col %in% names(col_data)) {
-    stop(
-      sprintf(
-        "Column '%s' was not found in colData.\nAvailable columns: %s",
-        group_col,
-        paste(names(col_data), collapse = ", ")
-      ),
-      call. = FALSE
-    )
+  if (!group_col %in% names(col_data)) {
+    stop(sprintf(
+      "Column '%s' was not found in colData.\nAvailable columns: %s",
+      group_col, paste(names(col_data), collapse = ", ")
+    ), call. = FALSE)
   }
 
-  col_ind   <- col_data[[group_col]] %in% group_levels
+  col_ind <- col_data[[group_col]] %in% group_levels
   cur_group <- col_data[[group_col]][col_ind]
-
   pairs <- expand.grid(i = seq_len(n_level), j = seq_len(trait_len))
 
   trait_testing <- function(k) {
@@ -84,14 +75,16 @@ analyze_trait_changes <- function(trait_se,
     trait_vec <- as.numeric(trait_list[[j]][i, col_ind])
     na_ind <- is.na(trait_vec)
     value_x <- trait_vec[!na_ind]
-    meta_x  <- cur_group[!na_ind]
+    meta_x <- cur_group[!na_ind]
 
     # skip if one of the group has less psms than threshold
-    if (any(table(meta_x)[group_levels] < min_psm))
+    if (any(table(meta_x)[group_levels] < min_psm)) {
       return(NULL)
+    }
     # skip all-zero vectors (for bool type traits)
-    if (all(value_x == 0))
+    if (all(value_x == 0)) {
       return(NULL)
+    }
 
     t_res <- t.test(value_x ~ meta_x, var.equal = FALSE)
     l_res <- car::leveneTest(value_x ~ meta_x, center = median)
@@ -108,11 +101,10 @@ analyze_trait_changes <- function(trait_se,
         t_pval = t_p,
         t_val  = t_res$statistic
       ))
+    } else {
+      return(NULL)
     }
-    return(NULL)
   }
-
   res_list <- pbapply::pblapply(seq_len(nrow(pairs)), trait_testing)
-  res_df <- do.call(rbind, res_list[!sapply(res_list, is.null)])
-  res_df
+  do.call(rbind, res_list[!sapply(res_list, is.null)])
 }

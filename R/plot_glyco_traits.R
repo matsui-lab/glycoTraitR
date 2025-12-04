@@ -17,12 +17,12 @@
 plot_glycan_tree <- function(g) {
   plot(
     g,
-    layout         = igraph::layout_as_tree(g, root = "a"),
-    vertex.label   = igraph::V(g)$type,
-    vertex.color   = igraph::V(g)$color,
-    vertex.size    = 30,
+    layout = igraph::layout_as_tree(g, root = "a"),
+    vertex.label = igraph::V(g)$type,
+    vertex.color = igraph::V(g)$color,
+    vertex.size = 30,
     edge.arrow.size = 1,
-    main           = "Glycan Topology"
+    main = "Glycan Topology"
   )
 }
 
@@ -68,15 +68,12 @@ plot_trait_distribution <- function(trait_se,
                                     group_levels,
                                     trait_name,
                                     feature) {
-
   assays <- assays(trait_se)
   coldata <- colData(trait_se)
   rowdata <- rowData(trait_se)
 
   # extract abundance vector for the specified trait and feature row
   abund <- assays[[trait_name]][feature, ]
-
-  # extract grouping column
   label <- coldata[[group_col]]
 
   # subset: only PSMs belonging to selected group levels
@@ -99,7 +96,7 @@ plot_trait_distribution <- function(trait_se,
   p_freq <-
     ggplot(df_plot, aes(x = Abundance, fill = Group)) +
     geom_histogram(
-      aes(y = ..count..),
+      aes(y = after_stat(count)),
       position = "dodge",
       color = "black",
       binwidth = max(1, ceiling(max(df_plot$Abundance) / 20))
@@ -132,6 +129,3 @@ plot_trait_distribution <- function(trait_se,
 
   return(list(p_hist = p_freq, p_box = p_box))
 }
-
-
-
