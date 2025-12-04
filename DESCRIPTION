@@ -33,7 +33,8 @@ Imports:
     SummarizedExperiment, 
     pbapply,
     car,
-    ggplot2
+    ggplot2,
+    magrittr
 Suggests:
     knitr,
     rmarkdown,
