@@ -47,6 +47,7 @@ folder <- system.file("extdata", "decipher_toyexample", package = "glycoTraitR")
 gpsm <- read_decipher_gpsm(folder)
 head(gpsm)
 
+
 }
 \seealso{
 \code{\link{read_pGlyco3_gpsm}},

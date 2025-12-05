@@ -15,9 +15,9 @@ compute_glycan_traits(tree, motifs)
 A named list of numeric trait values.
 }
 \description{
-Combine residue-level composition traits (see \code{\link{count_residues}}),
-structural traits (see \code{\link{compute_structural_traits}}), and
-user-defined motifs (see \code{\link{compute_userdefined_traits}})
+Combine residue-level composition traits (see \code{count_residues}),
+structural traits (see \code{compute_structural_traits}), and
+user-defined motifs (see \code{compute_userdefined_traits})
 into a unified trait vector.
 }
 \examples{
@@ -51,4 +51,3 @@ user_motifs <- list(
 compute_glycan_traits(tree, motifs = user_motifs)
 
 }
-\keyword{internal}

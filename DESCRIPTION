@@ -1,6 +1,6 @@
 Package: glycoTraitR
 Type: Package
-Title: Compute and analyze the glycan structrual traits from GPSM data.
+Title: Compute and analyze the glycan structrual traits from GPSM data
 Version: 0.99.0
 Authors@R: c(person("Bingyuan", "Zhang",
               email = "zhang.bingyuan.w8@f.mail.nagoya-u.ac.jp",
@@ -27,7 +27,6 @@ Encoding: UTF-8
 Imports: 
     igraph,
     dplyr,
-    purrr,
     stringr,
     tidyr,
     SummarizedExperiment, 

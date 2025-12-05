@@ -44,8 +44,6 @@
 #'   }
 #' Rows correspond only to significant comparisons (p < 0.05) for `l_pval` or `t_pval`.
 #'
-#' @importFrom pbapply pblapply
-#' @importFrom SummarizedExperiment assays colData rowData
 #'
 #' @examples
 #' # Load toy pGlyco3 GPSM data included with the package

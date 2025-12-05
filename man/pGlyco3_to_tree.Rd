@@ -41,4 +41,3 @@ tree <- pGlyco3_to_tree(pGlyco_expr)
 tree
 
 }
-\keyword{internal}

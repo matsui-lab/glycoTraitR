@@ -1,8 +1,8 @@
 #' Compute glycan traits from a parsed glycan tree
 #'
-#' Combine residue-level composition traits (see \code{\link{count_residues}}),
-#' structural traits (see \code{\link{compute_structural_traits}}), and
-#' user-defined motifs (see \code{\link{compute_userdefined_traits}})
+#' Combine residue-level composition traits (see \code{count_residues}),
+#' structural traits (see \code{compute_structural_traits}), and
+#' user-defined motifs (see \code{compute_userdefined_traits})
 #' into a unified trait vector.
 #'
 #' @param tree A parsed glycan tree from \code{\link{pGlyco3_to_tree}} or \code{\link{wurcs_to_tree}}.
@@ -41,7 +41,7 @@
 #' # Compute glycan structural traits
 #' compute_glycan_traits(tree, motifs = user_motifs)
 #'
-#' @keywords internal
+#' @export
 compute_glycan_traits <- function(tree, motifs) {
   cnt_trait <- count_residues(tree)
   struct_trait <- compute_structural_traits(tree)
@@ -126,8 +126,6 @@ annotate_traits_to_gpsm <- function(gpsm, from, motifs) {
 #'   matrix (trait × PSM), `rowData` contains peptide/protein names,
 #'   and `colData` contains metadata aligned to PSMs.
 #'
-#' @importFrom tidyr pivot_wider
-#' @importFrom SummarizedExperiment assays colData rowData
 #'
 #' @examples
 #' # Load toy GPSM table exported by pGlyco3

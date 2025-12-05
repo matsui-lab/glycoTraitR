@@ -10,7 +10,6 @@
 #'
 #' @return A glycan topology plot is drawn as a side effect.
 #'
-#' @import igraph
 #'
 #' @examples
 #' # Example: parse a pGlyco3-style glycan expression into a tree
@@ -73,8 +72,6 @@ plot_glycan_tree <- function(g) {
 #' * `p_hist` — histogram of trait intensities
 #' * `p_box`  — boxplot with jitter overlay
 #'
-#' @import ggplot2
-#' @importFrom SummarizedExperiment assays colData rowData
 #'
 #' @examples
 #' # Load the toy GPSM table exported by pGlyco3 (included in the package)

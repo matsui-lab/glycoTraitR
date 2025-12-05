@@ -82,11 +82,18 @@ WURCS_RES_MAP <- c(
 #'
 #' @examples
 #' # Example WURCS glycan string
-#' w <- "WURCS=2.0/4,9,8/[u2122h_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5]/1-2-3-4-4-4-4-4-4/a4-b1_b4-c1_c3-d1_c6-f1_d2-e1_f3-g1_f6-h1_h2-i1"
+#' w <- paste0(
+#' "WURCS=2.0/4,9,8/",
+#' "[u2122h_2*NCC/3=O]",
+#' "[a2122h-1b_1-5_2*NCC/3=O]",
+#' "[a1122h-1b_1-5]",
+#' "[a1122h-1a_1-5]",
+#' "/1-2-3-4-4-4-4-4-4/",
+#' "a4-b1_b4-c1_c3-d1_c6-f1_d2-e1_f3-g1_f6-h1_h2-i1")
 #' tree <- wurcs_to_tree(w)
 #' tree
 #'
-#' @keywords internal
+#' @export
 wurcs_to_tree <- function(w) {
   core <- sub("^WURCS=[^/]+/", "", w)
 
@@ -159,7 +166,7 @@ wurcs_to_tree <- function(w) {
 #' tree <- pGlyco3_to_tree(pGlyco_expr)
 #' tree
 #'
-#' @keywords internal
+#' @export
 pGlyco3_to_tree <- function(expr) {
   expr <- strsplit(expr, "")[[1]]
   node <- character()

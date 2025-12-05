@@ -1,12 +1,21 @@
+# RStudio project files
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^enz$
-^data$
-^\.Rmd
-^simulation
-^old_script
+
+# RStudio session user data
+^\.Ruserdata$
+
+# Markdown sources not needed in built package
+^README\.Rmd$
 ^LICENSE\.md$
-^doc$
-^Meta$
-^glycoTraitR.BiocCheck
+
+# pkgdown website configuration and output
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+
+# GitHub workflows / issue templates
 ^\.github$
+
+# Simulation
+^simulation$

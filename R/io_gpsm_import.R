@@ -51,10 +51,6 @@
 #' gpsm <- read_pGlyco3_gpsm(path)
 #' head(gpsm)
 #'
-#' @importFrom dplyr select group_by summarise n
-#' @importFrom stringr str_extract_all
-#' @importFrom magrittr %>%
-#'
 #' @export
 read_pGlyco3_gpsm <- function(gpsm_dir) {
   input <- read.delim(gpsm_dir)
@@ -107,6 +103,7 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
 #' The returned table is designed to be passed to
 #' \code{\link{build_trait_se}} for glycan trait computation.
 #'
+#'
 #' @seealso
 #' \code{\link{read_pGlyco3_gpsm}},
 #' \code{\link{build_trait_se}}
@@ -116,9 +113,6 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
 #' gpsm <- read_decipher_gpsm(folder)
 #' head(gpsm)
 #'
-#' @importFrom dplyr select group_by summarise bind_rows n
-#' @importFrom stringr str_extract_all str_remove
-#' @importFrom magrittr %>%
 #'
 #' @export
 read_decipher_gpsm <- function(gpsm_folder_dir) {
@@ -143,6 +137,7 @@ read_decipher_gpsm <- function(gpsm_folder_dir) {
   gpsm_table <- bind_rows(gpsm_list)
 
   # Add wurcs to glyco-decipher columns
+  data("glycanDatabase", package = "glycoTraitR", envir = environment())
   ind <- match(gpsm_table$GlycanID, glycanDatabase$GlycanID)
   gpsm_table$GlycanID <- glycanDatabase$StructureInformation[ind]
   # Rename the colnames
