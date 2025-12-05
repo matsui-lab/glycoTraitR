@@ -4,8 +4,9 @@
 .Ruserdata
 .github
 
-/simulation/
-/doc/
-/Meta/
+simulation/
+doc/
+Meta/
 pkgdown/
 glycoTraitR.BiocCheck/
+docs/
