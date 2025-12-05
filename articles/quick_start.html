@@ -77,7 +77,7 @@
                         <h4 data-toc-skip class="author">Bingyuan
 Zhang</h4>
             
-            <h4 data-toc-skip class="date">5 December 2025</h4>
+            <h4 data-toc-skip class="date">2025-12-05</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/matsui-lab/glycoTraitR/blob/HEAD/vignettes/quick_start.Rmd" class="external-link"><code>vignettes/quick_start.Rmd</code></a></small>
       <div class="hidden name"><code>quick_start.Rmd</code></div>
@@ -116,6 +116,8 @@ changes</li>
 <code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">require</a></span><span class="op">(</span><span class="st"><a href="https://bioconductor.github.io/BiocManager/" class="external-link">"BiocManager"</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://bioconductor.github.io/BiocManager/reference/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"matsui-lab/glycoTraitR"</span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/matsui-lab/glycoTraitR" class="external-link">glycoTraitR</a></span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -126,7 +128,7 @@ changes</li>
 <div class="section level3">
 <h3 id="load-example-data">1. Load example data<a class="anchor" aria-label="anchor" href="#load-example-data"></a>
 </h3>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The following is an example file from Zenodo</span></span>
 <span><span class="co"># url &lt;- "https://zenodo.org/records/17756830/files/pGlycoDB-GP-FDR-Pro-Quant-Site.txt?download=1"</span></span>
 <span><span class="co"># download.file(url, "pGlyco3_GPSM.txt", mode = "wb")</span></span>
@@ -144,7 +146,7 @@ changes</li>
 <div class="section level3">
 <h3 id="build-glycan-trait-matrices">2. Build glycan trait matrices<a class="anchor" aria-label="anchor" href="#build-glycan-trait-matrices"></a>
 </h3>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trait_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_trait_se.html">build_trait_se</a></span><span class="op">(</span></span>
 <span>  <span class="va">gpsm_toyexample</span>,</span>
 <span>  from <span class="op">=</span> <span class="st">"pGlyco3"</span>,</span>
@@ -156,7 +158,7 @@ changes</li>
 <div class="section level3">
 <h3 id="differential-analysis">3. Differential analysis<a class="anchor" aria-label="anchor" href="#differential-analysis"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">changed_traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/analyze_trait_changes.html">analyze_trait_changes</a></span><span class="op">(</span></span>
 <span>  trait_se     <span class="op">=</span> <span class="va">trait_se</span>,</span>
 <span>  group_col    <span class="op">=</span> <span class="st">"Diagnosis"</span>,</span>
@@ -175,7 +177,7 @@ changes</li>
 <div class="section level3">
 <h3 id="trait-distribution-visualization">4. Trait distribution visualization<a class="anchor" aria-label="anchor" href="#trait-distribution-visualization"></a>
 </h3>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot_trait_distribution.html">plot_trait_distribution</a></span><span class="op">(</span></span>
 <span>  trait_se     <span class="op">=</span> <span class="va">trait_se</span>,</span>
 <span>  group_col    <span class="op">=</span> <span class="st">"Diagnosis"</span>,</span>
@@ -185,16 +187,16 @@ changes</li>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p</span><span class="op">$</span><span class="va">p_hist</span></span></code></pre></div>
-<p><img src="quick_start_files/figure-html/unnamed-chunk-5-1.png" width="700"></p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p><img src="quick_start_files/figure-html/unnamed-chunk-6-1.png" width="700"></p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">p</span><span class="op">$</span><span class="va">p_box</span></span></code></pre></div>
-<p><img src="quick_start_files/figure-html/unnamed-chunk-5-2.png" width="700"></p>
+<p><img src="quick_start_files/figure-html/unnamed-chunk-6-2.png" width="700"></p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="define-your-own-glycan-motifs">Define Your Own Glycan Motifs<a class="anchor" aria-label="anchor" href="#define-your-own-glycan-motifs"></a>
 </h2>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/matsui-lab/glycoTraitR" class="external-link">glycoTraitR</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r.igraph.org/" class="external-link">igraph</a></span><span class="op">)</span></span></code></pre></div>
@@ -210,7 +212,7 @@ occurrences of motif patterns</p>
 <h3 id="parse-and-plot-glycan-trees">1. Parse and plot glycan trees<a class="anchor" aria-label="anchor" href="#parse-and-plot-glycan-trees"></a>
 </h3>
 <p>Suppose we have a vector of glycan structures.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example: parsed glycan trees from existing GPSM data</span></span>
 <span><span class="va">path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"pGlyco3_gpsm_toyexample.txt"</span>, package <span class="op">=</span> <span class="st">"glycoTraitR"</span><span class="op">)</span></span>
 <span><span class="va">gpsm_toyexample</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read_pGlyco3_gpsm.html">read_pGlyco3_gpsm</a></span><span class="op">(</span><span class="va">path</span><span class="op">)</span></span>
@@ -218,12 +220,12 @@ occurrences of motif patterns</p>
 <span><span class="va">glycans</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">gpsm_toyexample</span><span class="op">$</span><span class="va">GlycanStructure</span>, <span class="fu">glycoTraitR</span><span class="fu">:::</span><span class="va"><a href="../reference/pGlyco3_to_tree.html">pGlyco3_to_tree</a></span><span class="op">)</span></span></code></pre></div>
 <p>We use the function <code><a href="../reference/build_glycan_igraph.html">build_glycan_igraph()</a></code> to visualize
 an exxample of glycan structure.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># visualize example structures</span></span>
 <span><span class="va">glycans</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu">glycoTraitR</span><span class="fu">::</span><span class="fu"><a href="../reference/build_glycan_igraph.html">build_glycan_igraph</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="../reference/plot_glycan_tree.html">plot_glycan_tree</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p><img src="quick_start_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="quick_start_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <hr>
 </div>
 <div class="section level3">
@@ -235,7 +237,7 @@ an exxample of glycan structure.</p>
 <li>Edges: <code>"a-b"</code>, <code>"b-c"</code>
 </li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#### Example 1 ####</span></span>
 <span><span class="co"># (1) Select a glycan from pGlyco3 data</span></span>
 <span><span class="va">tree_full</span> <span class="op">&lt;-</span> <span class="va">glycans</span><span class="op">[[</span><span class="fl">24</span><span class="op">]</span><span class="op">]</span></span>
@@ -260,8 +262,8 @@ an exxample of glycan structure.</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_glycan_tree.html">plot_glycan_tree</a></span><span class="op">(</span><span class="va">g_motif</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_glycan_tree.html">plot_glycan_tree</a></span><span class="op">(</span><span class="va">g_full</span><span class="op">)</span></span></code></pre></div>
-<p><img src="quick_start_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<p><img src="quick_start_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">n_match</span>, <span class="st">"motif(s) found in the glycan"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "2 motif(s) found in the glycan"</span></span></code></pre>
 <hr>
@@ -271,7 +273,7 @@ an exxample of glycan structure.</p>
 </h3>
 <p>This example defines a <strong>branched motif</strong> containing
 Fucose:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">#### Example 2 ####</span></span>
 <span><span class="co"># (1) Select a glycan</span></span>
 <span><span class="va">tree_full</span> <span class="op">&lt;-</span> <span class="va">glycans</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
@@ -296,8 +298,8 @@ Fucose:</p>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_glycan_tree.html">plot_glycan_tree</a></span><span class="op">(</span><span class="va">g_motif</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/plot_glycan_tree.html">plot_glycan_tree</a></span><span class="op">(</span><span class="va">g_full</span><span class="op">)</span></span></code></pre></div>
-<p><img src="quick_start_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p><img src="quick_start_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">n_match</span>, <span class="st">"motif(s) found in the glycan"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">## [1] "1 motif(s) found in the glycan"</span></span></code></pre>
 <hr>
@@ -306,7 +308,7 @@ Fucose:</p>
 <h3 id="integrating-motifs-with-glycotraitr-for-trait-computation">4. Integrating Motifs with glycoTraitR (for Trait Computation)<a class="anchor" aria-label="anchor" href="#integrating-motifs-with-glycotraitr-for-trait-computation"></a>
 </h3>
 <p>You can define multiple motifs at once:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">user_motifs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  LinearH3 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    node <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"H"</span>, <span class="st">"H"</span>, <span class="st">"H"</span><span class="op">)</span>,</span>
@@ -318,7 +320,7 @@ Fucose:</p>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Then directly pass them into <code><a href="../reference/build_trait_se.html">build_trait_se()</a></code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trait_se</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_trait_se.html">build_trait_se</a></span><span class="op">(</span></span>
 <span>  <span class="va">gpsm_toyexample</span>,</span>
 <span>  from <span class="op">=</span> <span class="st">"pGlyco3"</span>,</span>
@@ -370,7 +372,7 @@ and include them directly in <em>glycoTraitR</em> analyses.</p>
 <span><span class="co">## [1] stats     graphics  grDevices utils     datasets  methods   base     </span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## other attached packages:</span></span>
-<span><span class="co">## [1] igraph_2.0.3       dplyr_1.1.4        glycoTraitR_0.99.0 BiocStyle_2.32.1  </span></span>
+<span><span class="co">## [1] igraph_2.0.3       dplyr_1.1.4        glycoTraitR_0.99.0</span></span>
 <span><span class="co">## </span></span>
 <span><span class="co">## loaded via a namespace (and not attached):</span></span>
 <span><span class="co">##  [1] SummarizedExperiment_1.34.0 gtable_0.3.6               </span></span>
@@ -396,24 +398,23 @@ and include them directly in <em>glycoTraitR</em> analyses.</p>
 <span><span class="co">## [41] DelayedArray_0.30.1         cachem_1.0.8               </span></span>
 <span><span class="co">## [43] abind_1.4-5                 tidyselect_1.2.1           </span></span>
 <span><span class="co">## [45] digest_0.6.35               stringi_1.8.4              </span></span>
-<span><span class="co">## [47] purrr_1.0.2                 bookdown_0.45              </span></span>
-<span><span class="co">## [49] labeling_0.4.3              fastmap_1.2.0              </span></span>
-<span><span class="co">## [51] grid_4.4.0                  cli_3.6.2                  </span></span>
-<span><span class="co">## [53] SparseArray_1.4.8           magrittr_2.0.3             </span></span>
-<span><span class="co">## [55] S4Arrays_1.4.1              utf8_1.2.4                 </span></span>
-<span><span class="co">## [57] dichromat_2.0-0.1           withr_3.0.0                </span></span>
-<span><span class="co">## [59] UCSC.utils_1.0.0            scales_1.4.0               </span></span>
-<span><span class="co">## [61] rmarkdown_2.26              XVector_0.44.0             </span></span>
-<span><span class="co">## [63] httr_1.4.7                  matrixStats_1.3.0          </span></span>
-<span><span class="co">## [65] ragg_1.5.0                  pbapply_1.7-2              </span></span>
-<span><span class="co">## [67] memoise_2.0.1               evaluate_0.23              </span></span>
-<span><span class="co">## [69] knitr_1.46                  GenomicRanges_1.56.0       </span></span>
-<span><span class="co">## [71] IRanges_2.38.0              rlang_1.1.3                </span></span>
-<span><span class="co">## [73] glue_1.7.0                  BiocManager_1.30.23        </span></span>
-<span><span class="co">## [75] BiocGenerics_0.50.0         rstudioapi_0.16.0          </span></span>
-<span><span class="co">## [77] jsonlite_1.8.8              R6_2.5.1                   </span></span>
-<span><span class="co">## [79] MatrixGenerics_1.16.0       systemfonts_1.3.1          </span></span>
-<span><span class="co">## [81] fs_1.6.4                    zlibbioc_1.50.0</span></span></code></pre>
+<span><span class="co">## [47] purrr_1.0.2                 labeling_0.4.3             </span></span>
+<span><span class="co">## [49] fastmap_1.2.0               grid_4.4.0                 </span></span>
+<span><span class="co">## [51] cli_3.6.2                   SparseArray_1.4.8          </span></span>
+<span><span class="co">## [53] magrittr_2.0.3              S4Arrays_1.4.1             </span></span>
+<span><span class="co">## [55] dichromat_2.0-0.1           utf8_1.2.4                 </span></span>
+<span><span class="co">## [57] withr_3.0.0                 scales_1.4.0               </span></span>
+<span><span class="co">## [59] UCSC.utils_1.0.0            rmarkdown_2.26             </span></span>
+<span><span class="co">## [61] XVector_0.44.0              httr_1.4.7                 </span></span>
+<span><span class="co">## [63] matrixStats_1.3.0           ragg_1.5.0                 </span></span>
+<span><span class="co">## [65] pbapply_1.7-2               memoise_2.0.1              </span></span>
+<span><span class="co">## [67] evaluate_0.23               knitr_1.46                 </span></span>
+<span><span class="co">## [69] GenomicRanges_1.56.0        IRanges_2.38.0             </span></span>
+<span><span class="co">## [71] rlang_1.1.3                 glue_1.7.0                 </span></span>
+<span><span class="co">## [73] BiocGenerics_0.50.0         rstudioapi_0.16.0          </span></span>
+<span><span class="co">## [75] jsonlite_1.8.8              R6_2.5.1                   </span></span>
+<span><span class="co">## [77] MatrixGenerics_1.16.0       systemfonts_1.3.1          </span></span>
+<span><span class="co">## [79] fs_1.6.4                    zlibbioc_1.50.0</span></span></code></pre>
 </div>
 </div>
   </div>
