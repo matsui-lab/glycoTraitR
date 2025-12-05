@@ -24,7 +24,7 @@ Useful links:
 Authors:
 \itemize{
   \item Koichi Himori \email{himori.koichi.b5@f.mail.nagoya-u.ac.jp}
-  \item Yusuke Matsui \email{matsui.yusuke.d4@f.mail.nagoya-u.ac.jp}
+  \item Yusuke Matsui \email{matsui.yusuke.d4@f.mail.nagoya-u.ac.jp} [funder]
 }
 
 }

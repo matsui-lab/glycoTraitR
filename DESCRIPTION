@@ -11,7 +11,7 @@ Authors@R: c(person("Bingyuan", "Zhang",
               role = c("aut")),
              person("Yusuke", "Matsui",
               email = "matsui.yusuke.d4@f.mail.nagoya-u.ac.jp",
-              role = c("aut")))
+              role = c("aut", "fnd")))
 Description: 
     GlycoTraitR is an R package for analyzing glycoproteomics data, 
     particularly glycopeptide-spectrum matches (GPSMs). It supports results 
