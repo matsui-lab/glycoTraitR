@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 .github
+*.Rproj
 
 simulation/
 doc/
