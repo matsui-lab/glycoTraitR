@@ -8,7 +8,7 @@
 
 **Glycoproteomics** is a rapidly expanding field, but analyzing the
 LC-MS data remains a complex, multi-step process. In [the
-post](https://lgatto.github.io/death-research-software/), Laurent
+post](https://lgatto.codeberg.page/death-research-software/), Laurent
 emphasizes that software is a central player in scientific research.
 Here is his simple but powerful equation:
 
