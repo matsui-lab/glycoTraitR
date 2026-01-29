@@ -45,7 +45,7 @@ build_glycan_igraph <- function(tree) {
 
   # from root a to decide direction
   bfs_res <- igraph::bfs(g0, root = "a", father = TRUE)
-  father <- setNames(igraph::V(g0)$name[bfs_res$father], igraph::V(g0)$name)
+  father <- stats::setNames(igraph::V(g0)$name[bfs_res$father], igraph::V(g0)$name)
   father <- father[!is.na(father)]
 
   directed_df <- data.frame(
@@ -63,7 +63,7 @@ build_glycan_igraph <- function(tree) {
   igraph::V(g)$is_root <- igraph::V(g)$name == "a"
 
   res_cols <- c("N" = "#1f77b4", "A" = "#800080", "H" = "#2ca02c", "F" = "#d62728", "G" = "#7EC1FF")
-  igraph::V(g)$type <- setNames(tree$node, ids)[igraph::V(g)$name]
+  igraph::V(g)$type <- stats::setNames(tree$node, ids)[igraph::V(g)$name]
   igraph::V(g)$color <- res_cols[igraph::V(g)$type]
   g
 }
@@ -120,7 +120,7 @@ count_residues <- function(tree) {
 #' @noRd
 compute_structural_traits <- function(tree) {
   res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
-  node <- setNames(tree$node, res_letters)
+  node <- stats::setNames(tree$node, res_letters)
   # use igraph to represent a glycan structure
   g <- build_glycan_igraph(tree)
   # corefucosed
@@ -216,7 +216,7 @@ compute_structural_traits <- function(tree) {
 #' @noRd
 compute_userdefined_traits <- function(tree, motifs) {
   res_letters <- c(letters, LETTERS)[seq_along(tree$node)]
-  node <- setNames(tree$node, res_letters)
+  node <- stats::setNames(tree$node, res_letters)
 
   # use igraph to represent a glycan structure
   g <- build_glycan_igraph(tree)

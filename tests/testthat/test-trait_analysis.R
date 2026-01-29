@@ -1,6 +1,5 @@
 testthat::test_that("analyze_trait_changes", {
   testthat::skip_if_not_installed("SummarizedExperiment")
-  testthat::skip_if_not_installed("S4Vectors")
   testthat::skip_if_not_installed("pbapply")
   testthat::skip_if_not_installed("car")
 
@@ -16,17 +15,17 @@ testthat::test_that("analyze_trait_changes", {
   # 6 samples, 2 groups (A/B), 2 levels (rows), 2 traits (assays)
   samples <- paste0("s", 1:6)
   grp <- factor(c("A", "A", "A", "B", "B", "B"), levels = c("A", "B"))
-  coldata <- S4Vectors::DataFrame(grp = grp, row.names = samples)
+  coldata <- data.frame(grp = grp, row.names = samples)
 
-  rowdata <- S4Vectors::DataFrame(level = c("L1", "L2"), row.names = c("L1", "L2"))
+  rowdata <- data.frame(level = c("L1", "L2"), row.names = c("L1", "L2"))
 
   # Trait 1 matrix
   # Row L1: strong group difference, includes one NA to hit NA-filter path
   # Row L2: all zeros -> should be skipped by all(value_x == 0)
   trait1 <- matrix(
     c(
-      10, 11, NA,  1,  2,  3,   # L1
-      0,  0,  0,  0,  0,  0    # L2 (all-zero)
+      10, 11, NA, 1, 2, 3, # L1
+      0, 0, 0, 0, 0, 0 # L2 (all-zero)
     ),
     nrow = 2, byrow = TRUE,
     dimnames = list(c("L1", "L2"), samples)
@@ -37,15 +36,15 @@ testthat::test_that("analyze_trait_changes", {
   # Row L2: group B has < min_psm non-NA -> should be skipped by min_psm check
   trait2 <- matrix(
     c(
-      5, 5, 6, 5, 6, 5,          # L1 (non-significant but non-constant)
-      1, 1, 1, NA, NA, 2         # L2 (B has only 1 non-NA if min_psm=2)
+      5, 5, 6, 5, 6, 5, # L1 (non-significant but non-constant)
+      1, 1, 1, NA, NA, 2 # L2 (B has only 1 non-NA if min_psm=2)
     ),
     nrow = 2, byrow = TRUE,
     dimnames = list(c("L1", "L2"), samples)
   )
 
   se <- SummarizedExperiment::SummarizedExperiment(
-    assays  = S4Vectors::SimpleList(trait1 = trait1, trait2 = trait2),
+    assays  = list(trait1 = trait1, trait2 = trait2),
     rowData = rowdata,
     colData = coldata
   )

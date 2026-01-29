@@ -1,6 +1,7 @@
 test_that("read_pGlyco3_gpsm works with toy example", {
   path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
-                      package = "glycoTraitR")
+    package = "glycoTraitR"
+  )
   expect_true(file.exists(path))
 
   gpsm <- read_pGlyco3_gpsm(path)
@@ -50,4 +51,3 @@ test_that("read_decipher_gpsm works with toy example folder", {
   # pick one row and verify it is in glycanDatabase structures
   expect_true(any(gpsm$GlycanStructure %in% glycanDatabase$StructureInformation))
 })
-

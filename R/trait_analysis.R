@@ -111,8 +111,8 @@ analyze_trait_changes <- function(trait_se, group_col, group_levels, min_psm = 2
       return(NULL)
     }
 
-    t_res <- t.test(value_x ~ meta_x, var.equal = FALSE)
-    l_res <- car::leveneTest(value_x ~ meta_x, center = median)
+    t_res <- stats::t.test(value_x ~ meta_x, var.equal = FALSE)
+    l_res <- car::leveneTest(value_x ~ meta_x, center = stats::median)
 
     l_p <- l_res$`Pr(>F)`[1]
     t_p <- t_res$p.value

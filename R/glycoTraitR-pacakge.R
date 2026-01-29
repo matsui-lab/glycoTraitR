@@ -2,11 +2,8 @@
 "_PACKAGE"
 
 # Selective imports ----
-
-#' @importFrom stats median setNames t.test
+#' @importFrom stats median setNames t.test aggregate
 #' @importFrom utils read.delim data
-#' @importFrom dplyr select group_by summarise bind_rows n all_of
-#' @importFrom stringr str_extract_all str_remove
 #' @importFrom pbapply pblapply
 #' @importFrom car leveneTest
 #' @importFrom SummarizedExperiment SummarizedExperiment assays colData rowData
@@ -19,3 +16,4 @@
 #'   subcomponent count_subgraph_isomorphisms
 #'   bfs V layout_as_tree
 #' @importFrom rlang .data
+NULL

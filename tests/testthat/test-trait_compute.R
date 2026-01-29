@@ -36,7 +36,7 @@ testthat::test_that("annotate_traits_to_gpsm works for pGlyco3 and decipher; war
   testthat::expect_s3_class(out_pg, "data.frame")
   testthat::expect_false("Count" %in% names(out_pg))
   testthat::expect_false("GlycanStructure" %in% names(out_pg))
-  testthat::expect_true(ncol(out_pg) > 3)  # Protein/Peptide/File + traits
+  testthat::expect_true(ncol(out_pg) > 3) # Protein/Peptide/File + traits
 
   ## ---- decipher branch (need a valid WURCS string that your parser can map) ----
   w <- paste0(
@@ -63,7 +63,6 @@ testthat::test_that("annotate_traits_to_gpsm works for pGlyco3 and decipher; war
   testthat::expect_false("Count" %in% names(out_dc))
   testthat::expect_false("GlycanStructure" %in% names(out_dc))
   testthat::expect_true(ncol(out_dc) > 3)
-
 })
 
 testthat::test_that("build_trait_se works for level=site and level=protein; warns on bad level", {
@@ -95,5 +94,4 @@ testthat::test_that("build_trait_se works for level=site and level=protein; warn
   se_prot <- glycoTraitR:::build_trait_se(gpsm, from = "pGlyco3", motifs = NULL, level = "protein", meta = meta)
   testthat::expect_s4_class(se_prot, "SummarizedExperiment")
   testthat::expect_true(length(SummarizedExperiment::assays(se_prot)) > 0)
-
 })

@@ -15,6 +15,6 @@ test_that("build_trait_se produces a SummarizedExperiment", {
   )
 
   expect_s4_class(se, "SummarizedExperiment")
-  expect_true(length(assays(se)) > 0) # at least one trait
+  expect_true(length(SummarizedExperiment::assays(se)) > 0) # at least one trait
   expect_true(nrow(se) > 0) # at least one protein
 })

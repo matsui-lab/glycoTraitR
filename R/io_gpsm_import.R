@@ -61,7 +61,7 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
   hits <- regmatches(input$Protein, m)
   input$Protein <- vapply(hits, function(x) paste(unique(x), collapse = "|"), character(1))
 
-  gpsm_table <- aggregate(
+  gpsm_table <- stats::aggregate(
     x = list(Count = rep.int(1L, nrow(input))),
     by = input[, c("Protein", "Peptide", "GlycanStructure", "File")],
     FUN = length
@@ -118,7 +118,6 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
 #' gpsm <- read_decipher_gpsm(folder)
 #' head(gpsm)
 #'
-#'
 #' @export
 read_decipher_gpsm <- function(gpsm_folder_dir) {
   gpsms <- list.files(gpsm_folder_dir)
@@ -126,11 +125,10 @@ read_decipher_gpsm <- function(gpsm_folder_dir) {
   gpsm_paths <- file.path(gpsm_folder_dir, gpsms)
 
   file_GPSM_count <- function(path) {
-
     df <- read.delim(path, header = TRUE, stringsAsFactors = FALSE)
     df <- df[, c("Protein", "Peptide", "GlycanID", "File")]
-    psm_count <- aggregate(
-      x  = list(Count = rep.int(1L, nrow(df))),
+    psm_count <- stats::aggregate(
+      x = list(Count = rep.int(1L, nrow(df))),
       by = df,
       FUN = length
     )

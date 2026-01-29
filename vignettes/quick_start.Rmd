@@ -11,16 +11,12 @@ abstract: >
 output: BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Quick Start}
-  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::knitr}
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  message = FALSE,
-  warning = FALSE
-)
+```{r style, echo = FALSE, results = 'asis'}
+BiocStyle::markdown()
 ```
 
 # Introduction
@@ -40,15 +36,16 @@ In this quick start guide, we demonstrate how to:
 
 The glycoTraitR package can be installed using **BiocManager**. 
 
-```{r, eval=FALSE}
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
+```{r install, eval=FALSE}
+if (!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
 BiocManager::install("matsui-lab/glycoTraitR")
 ```
 
 After installation, we load the package into the current R session. All functions used in the following examples are provided by *glycoTraitR*.
 
-```{r}
+```{r load}
 library(glycoTraitR)
 ```
 
@@ -62,7 +59,7 @@ The goal is to demonstrate how glycan structures can be transformed into biologi
 We begin by loading example GPSM data and accompanying sample metadata.  
 For reproducibility and convenience, this vignette uses a small toy dataset bundled with the package. The commented code above shows how users can instead download and analyze the full public dataset hosted on **Zenodo**.
 
-```{r}
+```{r load-example-data}
 # The following is an example file from Zenodo
 # url <- "https://zenodo.org/records/17756830/files/pGlycoDB-GP-FDR-Pro-Quant-Site.txt?download=1"
 # download.file(url, "pGlyco3_GPSM.txt", mode = "wb")
@@ -89,7 +86,7 @@ The `meta_toyexample` object provides sample-level annotations that will later b
 Next, we convert GPSM-level glycan information into glycan trait matrices.  
 This step parses glycan structures, computes composition and structural traits, and summarizes the resulting values at the **protein level** using a `SummarizedExperiment` object.
 
-```{r}
+```{r build-trait}
 trait_se <- build_trait_se(
   gpsm_toyexample,
   from = "pGlyco3",
@@ -108,7 +105,7 @@ Rows correspond to proteins, columns correspond to GPSMs, and values represent t
 We now perform differential analysis to identify glycan traits that differ significantly between experimental groups.  
 As an example, we compare samples labeled as *Normal* and *Symptomatic* based on the `Diagnosis` column in the sample metadata.
 
-```{r}
+```{r DA-trait}
 changed_traits <- analyze_trait_changes(
   trait_se     = trait_se,
   group_col    = "Diagnosis",
@@ -126,7 +123,7 @@ Each row represents a specific trait–protein combination showing evidence of d
 We can visualize its distribution at the GPSM level.  
 Here, we select the *Hexose* trait for the protein *MOG* as an example.
 
-```{r}
+```{r plot-trait}
 p <- plot_trait_distribution(
   trait_se     = trait_se,
   group_col    = "Diagnosis",
@@ -151,9 +148,8 @@ We will:
 -  Perform **subgraph isomorphism** matching using *igraph* functions 
 -  Count occurrences of motif patterns
 
-```{r message=FALSE}
+```{r load-igraph, message=FALSE}
 library(igraph)
-library(dplyr)
 ```
 
 -----
@@ -163,7 +159,7 @@ library(dplyr)
 We first parse glycan structures into tree representations.  
 Internally, glycans are represented as graphs, where nodes correspond to monosaccharides and edges represent glycosidic linkages.
 
-```{r}
+```{r example-pGlyco3}
 # Example: parsed glycan trees from existing GPSM data
 path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt", package = "glycoTraitR")
 gpsm_toyexample <- read_pGlyco3_gpsm(path)
@@ -173,11 +169,10 @@ glycans <- lapply(gpsm_toyexample$GlycanStructure, glycoTraitR:::pGlyco3_to_tree
 
 We use the function `build_glycan_igraph()` to visualize an example of glycan structure.
 
-```{r}
+```{r visualize-tree}
 # visualize example structures
-glycans[[1]] %>%
-  build_glycan_igraph() %>%
-  plot_glycan_tree()
+igraph_obj <- build_glycan_igraph(glycans[[1]])
+plot_glycan_tree(igraph_obj)
 ```
 
 This visualization highlights the branching structure and residue composition of a glycan, which is essential for understanding motif topology.
@@ -194,18 +189,18 @@ Here we define a **linear trisaccharide motif**:
 -   H — H — H
 -   Edges: `"a-b"`, `"b-c"`
 
-```{r}
+```{r example1}
 #### Example 1 ####
 # (1) Select a glycan from pGlyco3 data
 tree_full <- glycans[[24]]
-g_full <- glycoTraitR::build_glycan_igraph(tree_full)
+g_full <- build_glycan_igraph(tree_full)
 
 # (2) Define motif manually
 motif <- list(
   node = c("H", "H", "H"),
   edge = c("a-b", "b-c")
 )
-g_motif <- glycoTraitR::build_glycan_igraph(motif)
+g_motif <- build_glycan_igraph(motif)
 
 # (3) Perform subgraph matching
 n_match <- count_subgraph_isomorphisms(
@@ -232,7 +227,7 @@ More complex motifs can also be defined, including branched structures and speci
 
 This example defines a **branched motif** containing Fucose:
 
-```{r}
+```{r example2}
 #### Example 2 ####
 # (1) Select a glycan
 tree_full <- glycans[[1]]
@@ -267,7 +262,7 @@ print(paste(n_match, "motif(s) found in the glycan"))
 Multiple user-defined motifs can be supplied simultaneously.  
 Once defined, these motifs are treated as additional glycan traits and are incorporated into the trait computation workflow.
 
-```{r}
+```{r udmotifs}
 user_motifs <- list(
   LinearH3 = list(
     node = c("H", "H", "H"),
@@ -282,7 +277,7 @@ user_motifs <- list(
 
 Each user-defined motif appears as a separate assay in the `SummarizedExperiment`, allowing it to be analyzed together by `build_trait_se()` as other built-in glycan traits.
 
-```{r}
+```{r se-show}
 trait_se <- build_trait_se(
   gpsm_toyexample,
   from = "pGlyco3",

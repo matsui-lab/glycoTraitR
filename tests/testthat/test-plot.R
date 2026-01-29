@@ -14,12 +14,12 @@ testthat::test_that("plot_trait_distribution returns valid ggplot objects", {
     )
   )
 
-  coldata <- S4Vectors::DataFrame(
+  coldata <- data.frame(
     Group = c("A", "A", "A", "B", "B", "B"),
     row.names = paste0("psm", 1:6)
   )
 
-  rowdata <- S4Vectors::DataFrame(
+  rowdata <- data.frame(
     level = "Protein1",
     row.names = "Protein1"
   )

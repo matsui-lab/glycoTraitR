@@ -24,7 +24,6 @@ test_that("build_glycan_igraph builds a directed igraph with expected attributes
 })
 
 test_that("count_residues returns correct composition counts", {
-
   tree <- list(
     node = c("N", "H", "F", "H", "A", "G"),
     edge = c("a-b", "a-c", "b-d", "b-e", "e-f")
@@ -38,11 +37,11 @@ test_that("count_residues returns correct composition counts", {
   )
 
   testthat::expect_equal(unname(res["GlycanSize"]), 6)
-  testthat::expect_equal(unname(res["Hexose"]),     2)
-  testthat::expect_equal(unname(res["HexNAc"]),     1)
-  testthat::expect_equal(unname(res["Neu5Ac"]),     1)
-  testthat::expect_equal(unname(res["Neu5Gc"]),     1)
-  testthat::expect_equal(unname(res["Fucose"]),     1)
+  testthat::expect_equal(unname(res["Hexose"]), 2)
+  testthat::expect_equal(unname(res["HexNAc"]), 1)
+  testthat::expect_equal(unname(res["Neu5Ac"]), 1)
+  testthat::expect_equal(unname(res["Neu5Gc"]), 1)
+  testthat::expect_equal(unname(res["Fucose"]), 1)
 })
 
 test_that("compute_structural_traits computes expected built-in structural traits", {
@@ -64,12 +63,12 @@ test_that("compute_structural_traits computes expected built-in structural trait
       "H", # f
       "N", # g (bisecting N under coreman)
       "N", # h (antenna root 1)
-      "N"  # i (antenna root 2)
+      "N" # i (antenna root 2)
     ),
     edge = c(
-      "a-b", "a-c", "a-d",  # root children
-      "d-e", "d-f", "d-g",  # coreman children: H, H, N  -> bisecting
-      "e-h", "f-i"          # two antennas: H->N, H->N
+      "a-b", "a-c", "a-d", # root children
+      "d-e", "d-f", "d-g", # coreman children: H, H, N  -> bisecting
+      "e-h", "f-i" # two antennas: H->N, H->N
     )
   )
 
@@ -105,8 +104,8 @@ test_that("compute_userdefined_traits counts motif occurrences via subgraph isom
 
   # same structural tree as previous structural-traits test
   tree <- list(
-    node = c("N","F","F","H","H","H","N","N","N"),
-    edge = c("a-b","a-c","a-d","d-e","d-f","d-g","e-h","f-i")
+    node = c("N", "F", "F", "H", "H", "H", "N", "N", "N"),
+    edge = c("a-b", "a-c", "a-d", "d-e", "d-f", "d-g", "e-h", "f-i")
   )
 
   # motif: H -> N (should match twice: e->h and f->i)
@@ -141,13 +140,12 @@ test_that("compute_structural_traits covers coreman-NA branch (no H present)", {
 
   # else branch sets these to 0
   testthat::expect_identical(unname(tr["Antennas"]), 0)
-  testthat::expect_identical(unname(tr["Bisect"]),   0)
-  testthat::expect_identical(unname(tr["Complex"]),  0)
-  testthat::expect_identical(unname(tr["HighMan"]),  0)
-  testthat::expect_identical(unname(tr["Hybrid"]),   0)
+  testthat::expect_identical(unname(tr["Bisect"]), 0)
+  testthat::expect_identical(unname(tr["Complex"]), 0)
+  testthat::expect_identical(unname(tr["HighMan"]), 0)
+  testthat::expect_identical(unname(tr["Hybrid"]), 0)
 
   # CoreFuc/AntFuc still computed from root neighbors
   testthat::expect_true(unname(tr["CoreFuc"]) %in% c(0, 1))
   testthat::expect_true(unname(tr["AntFuc"]) %in% c(0, 1))
 })
-

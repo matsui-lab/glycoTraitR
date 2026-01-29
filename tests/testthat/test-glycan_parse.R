@@ -1,5 +1,4 @@
 test_that("wurcs_to_tree parses nodes and edges correctly", {
-
   w <- paste0(
     "WURCS=2.0/2,3,2/",
     "[a2122h-1x_1-5_2*NCC/3=O]",
@@ -28,7 +27,6 @@ test_that("wurcs_to_tree parses nodes and edges correctly", {
 
 
 test_that("pGlyco3_to_tree parses parentheses and edges correctly", {
-
   expr <- "(N(H(H)))"
   tree <- pGlyco3_to_tree(expr)
 
@@ -47,4 +45,3 @@ test_that("pGlyco3_to_tree parses parentheses and edges correctly", {
   ## root has children (covers parent != NULL branch)
   expect_gt(length(tree$edge), 0)
 })
-

@@ -35,11 +35,12 @@ Suggests:
     knitr,
     BiocStyle,
     rmarkdown,
+    markdown,
     testthat (>= 3.0.0)
 biocViews: Proteomics, MassSpectrometry, Visualization, Software
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 BugReports: https://github.com/matsui-lab/glycoTraitR/issues
 Depends: 
-    R (>= 4.4.0)
+    R (>= 4.5.0)
 Config/testthat/edition: 3

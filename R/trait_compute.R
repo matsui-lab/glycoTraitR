@@ -173,9 +173,9 @@ build_trait_se <- function(gpsm, from, motifs = NULL, level, meta) {
     out <- {
       rr <- unique(out[[sel]])
       cc <- unique(out$psm_id)
-      m  <- matrix(NA, length(rr), length(cc), dimnames = list(NULL, cc))
+      m <- matrix(NA, length(rr), length(cc), dimnames = list(NULL, cc))
       m[cbind(match(out[[sel]], rr), match(out$psm_id, cc))] <- out[[traits[i]]]
-      data.frame(setNames(list(rr), sel), m, check.names = FALSE)
+      data.frame(stats::setNames(list(rr), sel), m, check.names = FALSE)
     }
     row.names(out) <- out[[1]]
     out[, -1]

@@ -149,39 +149,59 @@ plot_trait_distribution <- function(trait_se,
 
   ## freq hist
   p_freq <-
-    ggplot(df_plot, aes(x = .data$Abundance, fill = .data$Group)) +
-    geom_histogram(
-      aes(y = after_stat(count)),
+    ggplot2::ggplot(
+      data = df_plot,
+      ggplot2::aes(x = .data$Abundance, fill = .data$Group)
+    ) +
+    ggplot2::geom_histogram(
+      ggplot2::aes(y = ggplot2::after_stat(count)),
       position = "dodge",
       color = "black",
       binwidth = max(1, ceiling(max(df_plot$Abundance) / 20))
     ) +
-    scale_fill_manual(values = setNames(c("#e31a1c", "#1f78b4"), group_levels)) +
-    labs(x = paste(trait_name, "Count at", feature), y = "PSM count") +
-    theme_classic(base_size = 14) +
-    theme(
-      plot.title = element_text(hjust = 0.5, face = "bold"),
-      axis.text.x = element_text(size = 14),
-      axis.text.y = element_text(size = 12),
+    ggplot2::scale_fill_manual(
+      values = stats::setNames(c("#e31a1c", "#1f78b4"), group_levels)
+    ) +
+    ggplot2::labs(
+      x = paste(trait_name, "Count at", feature),
+      y = "PSM count"
+    ) +
+    ggplot2::theme_classic(base_size = 14) +
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(hjust = 0.5, face = "bold"),
+      axis.text.x = ggplot2::element_text(size = 14),
+      axis.text.y = ggplot2::element_text(size = 12),
       legend.position = "top",
-      legend.title = element_blank(),
-      legend.text = element_text(size = 14)
+      legend.title = ggplot2::element_blank(),
+      legend.text = ggplot2::element_text(size = 14)
     )
 
-  p_box <- ggplot(df_plot, aes(x = .data$Group,
-                               y = .data$Abundance,
-                               fill = .data$Group)) +
-    geom_boxplot(width = 0.5, show.legend = FALSE) +
-    geom_jitter(size = 1, width = 0.1, show.legend = FALSE) +
-    scale_fill_manual(values = setNames(c("#e31a1c", "#1f78b4"), group_levels)) +
-    labs(x = NULL, y = paste(trait_name, "Count at", feature)) +
-    theme_classic(base_size = 14) +
-    theme(
-      axis.text.x = element_text(size = 14),
-      axis.text.y = element_text(size = 12),
+  ## boxplot
+  p_box <-
+    ggplot2::ggplot(
+      data = df_plot,
+      ggplot2::aes(
+        x = .data$Group,
+        y = .data$Abundance,
+        fill = .data$Group
+      )
+    ) +
+    ggplot2::geom_boxplot(width = 0.5, show.legend = FALSE) +
+    ggplot2::geom_jitter(size = 1, width = 0.1, show.legend = FALSE) +
+    ggplot2::scale_fill_manual(
+      values = stats::setNames(c("#e31a1c", "#1f78b4"), group_levels)
+    ) +
+    ggplot2::labs(
+      x = NULL,
+      y = paste(trait_name, "Count at", feature)
+    ) +
+    ggplot2::theme_classic(base_size = 14) +
+    ggplot2::theme(
+      axis.text.x = ggplot2::element_text(size = 14),
+      axis.text.y = ggplot2::element_text(size = 12),
       legend.position = "top",
-      legend.title = element_blank(),
-      legend.text = element_text(size = 14)
+      legend.title = ggplot2::element_blank(),
+      legend.text = ggplot2::element_text(size = 14)
     )
 
   return(list(p_hist = p_freq, p_box = p_box))
