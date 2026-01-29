@@ -75,9 +75,9 @@
 #'
 #' @export
 analyze_trait_changes <- function(trait_se, group_col, group_levels, min_psm = 20) {
-  trait_list <- assays(trait_se)
-  col_data <- colData(trait_se)
-  row_data <- rowData(trait_se)
+  trait_list <- SummarizedExperiment::assays(trait_se)
+  col_data <- SummarizedExperiment::colData(trait_se)
+  row_data <- SummarizedExperiment::rowData(trait_se)
 
   n_level <- nrow(trait_list[[1]])
   trait_len <- length(trait_list)

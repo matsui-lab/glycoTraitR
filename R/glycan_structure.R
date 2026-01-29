@@ -141,11 +141,10 @@ compute_structural_traits <- function(tree) {
     # number of branches
     branch_man <- node[kids_of_coreman] == "H"
     branch_man <- names(branch_man)[branch_man]
-    ant_roots <- lapply(branch_man, function(x) {
+    ant_roots_list <- lapply(branch_man, function(x) {
       igraph::neighbors(g, x, mode = "out")
-    }) %>%
-      unlist() %>%
-      names()
+    })
+    ant_roots <- names(unlist(ant_roots_list))
     ant_cnt <- sum(node[ant_roots] == "N")
 
     # complex
@@ -159,10 +158,11 @@ compute_structural_traits <- function(tree) {
     highman <- ifelse(cond1 & cond2, 1, 0)
 
     # hybrid
-    kids_of_each_ant <- lapply(ant_roots, function(x) {
+    kids_of_each_ant_list <- lapply(ant_roots, function(x) {
       sub <- igraph::subcomponent(g, x, mode = "out")
       all(node[sub$name] == "H")
-    }) %>% unlist()
+    })
+    kids_of_each_ant <- unlist(kids_of_each_ant_list)
     cond1 <- any(kids_of_each_ant)
     cond2 <- ant_cnt >= 2
     hybrid <- ifelse(cond1 & cond2, 1, 0)
@@ -173,9 +173,15 @@ compute_structural_traits <- function(tree) {
     highman <- 0
     hybrid <- 0
   }
+
   c(
-    Antennas = ant_cnt, Bisect = bisecting, Complex = complex,
-    HighMan = highman, Hybrid = hybrid, CoreFuc = corefucosed, AntFuc = antfucosed
+    Antennas = ant_cnt,
+    Bisect = bisecting,
+    Complex = complex,
+    HighMan = highman,
+    Hybrid = hybrid,
+    CoreFuc = corefucosed,
+    AntFuc = antfucosed
   )
 }
 
@@ -223,10 +229,11 @@ compute_userdefined_traits <- function(tree, motifs) {
     for (i in seq_len(n)) {
       trait <- names(motifs)[i]
       g_sub <- build_glycan_igraph(motifs[[i]])
+      lev <- sort(unique(c(igraph::V(g)$type, igraph::V(g_sub)$type)))
       n_sub <- igraph::count_subgraph_isomorphisms(g_sub, g,
         method = "vf2",
-        vertex.color1 = factor(V(g)$type),
-        vertex.color2 = factor(V(g_sub)$type),
+        vertex.color1 = factor(igraph::V(g)$type, levels = lev),
+        vertex.color2 = factor(igraph::V(g_sub)$type, levels = lev),
         edge.color1 = NULL,
         edge.color2 = NULL
       )

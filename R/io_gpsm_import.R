@@ -54,16 +54,21 @@
 #' @export
 read_pGlyco3_gpsm <- function(gpsm_dir) {
   input <- read.delim(gpsm_dir)
-  input <- input %>% select("RawName", "Proteins", "Peptide", "PlausibleStruct")
+  input <- input[, c("RawName", "Proteins", "Peptide", "PlausibleStruct")]
   colnames(input) <- c("File", "Protein", "Peptide", "GlycanStructure")
-  input$Protein <- input$Protein %>%
-    str_extract_all("[A-Z0-9]+(?=_)") %>%
-    lapply(unique) %>%
-    vapply(function(x) paste(x, collapse = "|"), FUN.VALUE = character(1))
-  gpsm_table <- input %>%
-    group_by(Protein, Peptide, GlycanStructure, File) %>%
-    summarise(Count = n(), .groups = "drop")
-  gpsm_table
+
+  m <- gregexpr("[A-Z0-9]+(?=_)", input$Protein, perl = TRUE)
+  hits <- regmatches(input$Protein, m)
+  input$Protein <- vapply(hits, function(x) paste(unique(x), collapse = "|"), character(1))
+
+  gpsm_table <- aggregate(
+    x = list(Count = rep.int(1L, nrow(input))),
+    by = input[, c("Protein", "Peptide", "GlycanStructure", "File")],
+    FUN = length
+  )
+
+  # return data frame
+  as.data.frame(gpsm_table)
 }
 
 #' Combine Glyco-Decipher GPSM results into a long-format table
@@ -117,24 +122,34 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
 #' @export
 read_decipher_gpsm <- function(gpsm_folder_dir) {
   gpsms <- list.files(gpsm_folder_dir)
-  file_names <- gpsms %>% str_remove("_GPSM_DatabaseGlycan\\.txt$")
+  file_names <- sub("_GPSM_DatabaseGlycan\\.txt$", "", gpsms)
   gpsm_paths <- file.path(gpsm_folder_dir, gpsms)
+
   file_GPSM_count <- function(path) {
-    psm_count <-
-      read.delim(path, header = TRUE, stringsAsFactors = FALSE) %>%
-      select(Protein, Peptide, GlycanID, File) %>%
-      group_by(Protein, Peptide, GlycanID, File) %>%
-      summarise(Count = n(), .groups = "drop")
 
-    psm_count$Protein <- psm_count$Protein %>%
-      str_extract_all("[A-Z0-9]+(?=_)") %>%
-      lapply(unique) %>%
-      vapply(function(x) paste(x, collapse = "|"), FUN.VALUE = character(1))
+    df <- read.delim(path, header = TRUE, stringsAsFactors = FALSE)
+    df <- df[, c("Protein", "Peptide", "GlycanID", "File")]
+    psm_count <- aggregate(
+      x  = list(Count = rep.int(1L, nrow(df))),
+      by = df,
+      FUN = length
+    )
+    psm_count$Count <- as.integer(psm_count$Count)
 
-    psm_count
+    m <- gregexpr("[A-Z0-9]+(?=_)", psm_count$Protein, perl = TRUE)
+    hits <- regmatches(psm_count$Protein, m)
+    psm_count$Protein <- vapply(
+      lapply(hits, unique),
+      function(x) paste(x, collapse = "|"),
+      FUN.VALUE = character(1)
+    )
+
+    as.data.frame(psm_count)
   }
+
   gpsm_list <- lapply(gpsm_paths, file_GPSM_count)
-  gpsm_table <- bind_rows(gpsm_list)
+
+  gpsm_table <- do.call(rbind, gpsm_list)
 
   # Add wurcs to glyco-decipher columns
   data("glycanDatabase", package = "glycoTraitR", envir = environment())

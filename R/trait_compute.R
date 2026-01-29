@@ -86,18 +86,18 @@ annotate_traits_to_gpsm <- function(gpsm, from, motifs) {
       unlist(res_list)
     }
   } else {
-    warning("`from` must be either 'decipher' or 'pGlyco3'. No traits were computed.")
+    stop("`from` must be either 'decipher' or 'pGlyco3'. No traits were computed.")
   }
 
   # Compute traits for each glycan structure
   traits_list <- pbapply::pblapply(glycan, get_trait_vector)
-  traits_columns <- bind_rows(traits_list)
+  traits_columns <- do.call(rbind, traits_list)
 
   # add trait to psm matrix
   ind <- match(gpsm$GlycanStructure, glycan)
   traits_add <- gpsm$Count * traits_columns[ind, ]
   # combine the both
-  gpsm <- select(gpsm, -Count, -GlycanStructure)
+  gpsm <- gpsm[, !names(gpsm) %in% c("Count", "GlycanStructure"), drop = FALSE]
   gpsm <- cbind(gpsm, traits_add)
 
   gpsm
@@ -137,6 +137,7 @@ annotate_traits_to_gpsm <- function(gpsm, from, motifs) {
 #' # Load toy metadata for summarization
 #' data("meta_toyexample")
 #'
+#'
 #' # Build glycan trait SummarizedExperiment at protein level
 #' trait_se <- build_trait_se(
 #'   gpsm = gpsm_toyexample,
@@ -160,7 +161,7 @@ build_trait_se <- function(gpsm, from, motifs = NULL, level, meta) {
   } else if (level == "protein") {
     sel <- "Protein"
   } else {
-    warning("`level` must be either 'site' or 'protein'.")
+    stop("`level` must be either 'site' or 'protein'.")
   }
 
   gpsm_mat$psm_id <- paste0("psm", seq_len(nrow(gpsm_mat)))
@@ -168,9 +169,14 @@ build_trait_se <- function(gpsm, from, motifs = NULL, level, meta) {
   traits <- setdiff(colnames(gpsm_mat), c("Protein", "Peptide", "File", "psm_id"))
   traits_len <- length(traits)
   get_se_level_trait <- function(i) {
-    out <- select(gpsm_mat, all_of(sel), "psm_id", traits[i])
-    out <- tidyr::pivot_wider(data = out, names_from = psm_id, values_from = traits[i])
-    out <- as.data.frame(out)
+    out <- gpsm_mat[, c(sel, "psm_id", traits[i]), drop = FALSE]
+    out <- {
+      rr <- unique(out[[sel]])
+      cc <- unique(out$psm_id)
+      m  <- matrix(NA, length(rr), length(cc), dimnames = list(NULL, cc))
+      m[cbind(match(out[[sel]], rr), match(out$psm_id, cc))] <- out[[traits[i]]]
+      data.frame(setNames(list(rr), sel), m, check.names = FALSE)
+    }
     row.names(out) <- out[[1]]
     out[, -1]
   }
@@ -179,10 +185,12 @@ build_trait_se <- function(gpsm, from, motifs = NULL, level, meta) {
   trait_mat_list <- pbapply::pblapply(seq_len(traits_len), get_se_level_trait)
   names(trait_mat_list) <- traits
 
+
   # Summarized Experiments
   ind <- match(gpsm_mat$File, meta$file)
   coldata <- meta[ind, ]
   coldata$psm_id <- gpsm_mat$psm_id
+  rownames(coldata) <- NULL
 
   rowdata <- data.frame(
     level = rownames(trait_mat_list[[1]])

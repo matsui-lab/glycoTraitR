@@ -26,16 +26,14 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 Imports: 
     igraph,
-    dplyr,
-    stringr,
-    tidyr,
     SummarizedExperiment, 
     pbapply,
     car,
     ggplot2,
-    magrittr
+    rlang
 Suggests:
     knitr,
+    BiocStyle,
     rmarkdown,
     testthat (>= 3.0.0)
 biocViews: Proteomics, MassSpectrometry, Visualization, Software

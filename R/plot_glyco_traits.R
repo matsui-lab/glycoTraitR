@@ -123,9 +123,9 @@ plot_trait_distribution <- function(trait_se,
                                     group_levels,
                                     trait_name,
                                     feature) {
-  assays <- assays(trait_se)
-  coldata <- colData(trait_se)
-  rowdata <- rowData(trait_se)
+  assays <- SummarizedExperiment::assays(trait_se)
+  coldata <- SummarizedExperiment::colData(trait_se)
+  rowdata <- SummarizedExperiment::rowData(trait_se)
 
   # extract abundance vector for the specified trait and feature row
   abund <- assays[[trait_name]][feature, ]
@@ -149,7 +149,7 @@ plot_trait_distribution <- function(trait_se,
 
   ## freq hist
   p_freq <-
-    ggplot(df_plot, aes(x = Abundance, fill = Group)) +
+    ggplot(df_plot, aes(x = .data$Abundance, fill = .data$Group)) +
     geom_histogram(
       aes(y = after_stat(count)),
       position = "dodge",
@@ -168,7 +168,9 @@ plot_trait_distribution <- function(trait_se,
       legend.text = element_text(size = 14)
     )
 
-  p_box <- ggplot(df_plot, aes(x = Group, y = Abundance, fill = Group)) +
+  p_box <- ggplot(df_plot, aes(x = .data$Group,
+                               y = .data$Abundance,
+                               fill = .data$Group)) +
     geom_boxplot(width = 0.5, show.legend = FALSE) +
     geom_jitter(size = 1, width = 0.1, show.legend = FALSE) +
     scale_fill_manual(values = setNames(c("#e31a1c", "#1f78b4"), group_levels)) +

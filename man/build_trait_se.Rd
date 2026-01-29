@@ -44,6 +44,7 @@ gpsm_toyexample <- read_pGlyco3_gpsm(path)
 # Load toy metadata for summarization
 data("meta_toyexample")
 
+
 # Build glycan trait SummarizedExperiment at protein level
 trait_se <- build_trait_se(
   gpsm = gpsm_toyexample,
