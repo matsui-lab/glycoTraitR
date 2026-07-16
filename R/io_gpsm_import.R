@@ -66,9 +66,9 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
     by = input[, c("Protein", "Peptide", "GlycanStructure", "File")],
     FUN = length
   )
+  gpsm <- as.data.frame(gpsm_table)
 
-  # return data frame
-  as.data.frame(gpsm_table)
+  gpsm
 }
 
 #' Combine Glyco-Decipher GPSM results into a long-format table
@@ -156,5 +156,7 @@ read_decipher_gpsm <- function(gpsm_folder_dir) {
   # Rename the colnames
   colnames(gpsm_table)[seq_len(3)] <- c("Protein", "Peptide", "GlycanStructure")
 
-  gpsm_table
+  gpsm <- as.data.frame(gpsm_table)
+
+  gpsm
 }

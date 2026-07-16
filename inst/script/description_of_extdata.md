@@ -40,16 +40,13 @@ sequence database.
 The resulting glycopeptide spectral matches (GPSMs) from the full search
 were archived in Zenodo (<https://zenodo.org/records/17759790>).
 
-The original search engine output GPSM file(s) are too big to fit in the
-R package. To construct the toy dataset provided in extdata, a small
-subset of GPSM files was selected from this Zenodo archive, representing
-typical outputs from both search engines. These files were extracted
-without modification and formatted in the minimal structure required for
-demonstrating the functionality of the glycoTraitR workflow, including:
+The complete search-engine output files are too large to include in the
+R package. Therefore, an example was prepared from the GPSM results
+available in the Zenodo archive.
 
--   a toy pGlyco3 GPSM matrix (pGlyco3_gpsm_toyexample.txt).
--   a toy GlycoDecipher GPSM folder (decipher_toyexample/).
-
-This curated subset is intended for demonstration purposes. It preserves
-the structure and essential characteristics of the original full dataset
-while substantially reducing file size and complexity.
+The toy example we put here is the GPSM files from pGlyco3, which was
+first imported using the corresponding GlycoTraitR reader function and
+then saved as the processed R object `gpsm_toyexample.rds`. This object
+is provided as package data and can be used directly in the downstream
+analysis without repeating the file-import step. The corresponding meta
+`meta_toyexample.rds` is also provided together.

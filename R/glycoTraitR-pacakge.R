@@ -5,8 +5,6 @@
 #' @importFrom stats median setNames t.test aggregate
 #' @importFrom utils read.delim data
 #' @importFrom pbapply pblapply
-#' @importFrom car leveneTest
-#' @importFrom SummarizedExperiment SummarizedExperiment assays colData rowData
 #' @importFrom ggplot2
 #'   ggplot aes geom_histogram geom_boxplot geom_jitter
 #'   scale_fill_manual labs theme theme_classic

@@ -44,8 +44,8 @@ build_glycan_igraph <- function(tree) {
   g0 <- igraph::graph_from_edgelist(undirected_mat, directed = FALSE)
 
   # from root a to decide direction
-  bfs_res <- igraph::bfs(g0, root = "a", father = TRUE)
-  father <- stats::setNames(igraph::V(g0)$name[bfs_res$father], igraph::V(g0)$name)
+  bfs_res <- igraph::bfs(g0, root = "a", parent = TRUE)
+  father <- stats::setNames(igraph::V(g0)$name[bfs_res$parent], igraph::V(g0)$name)
   father <- father[!is.na(father)]
 
   directed_df <- data.frame(
@@ -100,7 +100,7 @@ count_residues <- function(tree) {
 
 #' Compute structural glycan traits from an igraph glycan tree
 #'
-#' Evaluate build-in structural glycan traits including:
+#' Evaluate built-in structural glycan traits including:
 #' \itemize{
 #'   \item \code{Antenna numbers}
 #'   \item \code{Bisecting-type}
@@ -176,12 +176,12 @@ compute_structural_traits <- function(tree) {
 
   c(
     Antennas = ant_cnt,
-    Bisect = bisecting,
-    Complex = complex,
-    HighMan = highman,
-    Hybrid = hybrid,
-    CoreFuc = corefucosed,
-    AntFuc = antfucosed
+    IsBisecting = bisecting,
+    IsComplex = complex,
+    IsOligomannose = highman,
+    IsHybrid = hybrid,
+    IsC_Fucosed = corefucosed,
+    IsA_Fucosed = antfucosed
   )
 }
 

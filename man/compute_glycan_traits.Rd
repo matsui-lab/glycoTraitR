@@ -4,7 +4,7 @@
 \alias{compute_glycan_traits}
 \title{Compute glycan traits from a parsed glycan tree}
 \usage{
-compute_glycan_traits(tree, motifs)
+compute_glycan_traits(tree, motifs = NULL)
 }
 \arguments{
 \item{tree}{A parsed glycan tree from \code{\link{pGlyco3_to_tree}} or \code{\link{wurcs_to_tree}}.}
