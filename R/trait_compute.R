@@ -154,16 +154,16 @@ obtain_hscore_site <- function(gpsm_mat, gf_thres = 3) {
     by = list(File = gpsm_mat$File, Peptide = gpsm_mat$Peptide),
     FUN = sum
   )
-  names(mu_tab)[-(1:2)] <- paste0(names(mu_tab)[-(1:2)], "_mu")
+  names(mu_tab)[-seq_len(2)] <- paste0(names(mu_tab)[-seq_len(2)], "_mu")
 
   tmp <- merge(gpsm_mat, mu_tab, by = c("File", "Peptide"))
-  h_mat <- sapply(glycan_cols, function(m) {
+  h_mat <- vapply(glycan_cols, function(m) {
     tmp$site_ratio * (tmp[[m]] - tmp[[paste0(m, "_mu")]])^2
-  })
+  }, FUN.VALUE = numeric(nrow(tmp)))
   h_tab <- aggregate(h_mat,
                      by = list(File = tmp$File, Peptide = tmp$Peptide),
                      FUN = sum)
-  names(h_tab)[-(1:2)] <- paste0(names(h_tab)[-(1:2)], "_h")
+  names(h_tab)[-seq_len(2)] <- paste0(names(h_tab)[-seq_len(2)], "_h")
 
   h_site <- merge(mu_tab, h_tab, by = c("File", "Peptide"))
   h_site
@@ -232,13 +232,13 @@ obtain_hscore_protein <- function(gpsm_mat, gf_thres = 5) {
     FUN = sum
   )
 
-  names(mu_tab)[-(1:2)] <- paste0(names(mu_tab)[-(1:2)], "_mu")
+  names(mu_tab)[-seq_len(2)] <- paste0(names(mu_tab)[-seq_len(2)], "_mu")
 
   tmp <- merge(gpsm_mat, mu_tab, by = c("File", "Protein"))
 
-  h_mat <- sapply(glycan_cols, function(m) {
+  h_mat <- vapply(glycan_cols, function(m) {
     tmp$protein_ratio * (tmp[[m]] - tmp[[paste0(m, "_mu")]])^2
-  })
+  }, FUN.VALUE = numeric(nrow(tmp)))
 
   h_tab <- aggregate(
     h_mat,
@@ -246,7 +246,7 @@ obtain_hscore_protein <- function(gpsm_mat, gf_thres = 5) {
     FUN = sum
   )
 
-  names(h_tab)[-(1:2)] <- paste0(names(h_tab)[-(1:2)], "_h")
+  names(h_tab)[-seq_len(2)] <- paste0(names(h_tab)[-seq_len(2)], "_h")
   h_protein <- merge(mu_tab, h_tab, by = c("File", "Protein"))
   h_protein
 }
@@ -277,22 +277,8 @@ obtain_hscore_protein <- function(gpsm_mat, gf_thres = 5) {
 #' traits, and columns ending in `_h` are abundance-weighted heterogeneity
 #' scores.
 #'
-#' @examples
-#' path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
-#'   package = "glycoTraitR"
-#' )
-#' gpsm_toyexample <- read_pGlyco3_gpsm(path)
-#'
-#' hscore <- compute_hscore(
-#'   gpsm = gpsm_toyexample,
-#'   from = "pGlyco3",
-#'   motifs = NULL
-#' )
-#'
-#' head(hscore$h_site)
-#' head(hscore$h_protein)
-#'
-#' @export
+#' @keywords internal
+#' @noRd
 compute_hscore <- function(gpsm, from, motifs = NULL) {
   gpsm_mat <- annotate_traits_to_gpsm(gpsm, from, motifs)
 

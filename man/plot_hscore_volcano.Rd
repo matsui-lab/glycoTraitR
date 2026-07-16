@@ -26,3 +26,19 @@ A \code{ggplot2}/\code{patchwork} object. The x-axis shows group
 Visualize differential glycan trait abundance and heterogeneity results as
 volcano plots for protein- and site-level features.
 }
+\examples{
+gpsm <- readRDS(system.file("extdata", "gpsm_toyexample.rds", package = "glycoTraitR"))
+meta <- readRDS(system.file("extdata", "meta_toyexample.rds", package = "glycoTraitR"))
+
+res <- analyze_hscore_changes(
+  gpsm = gpsm,
+  from = "pGlyco3",
+  meta = meta,
+  group_col = "Diagnosis",
+  group_levels = c("Normal", "Symptomatic"),
+  B = 500
+)
+
+plot_hscore_volcano(res)
+
+}

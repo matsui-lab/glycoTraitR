@@ -57,8 +57,6 @@
 #' @param min_samples Integer; minimum number of non-missing samples required
 #'   in each group for a feature-trait test. Default is 3.
 #'
-#' @param seed Optional integer random seed for reproducible permutation
-#'   p-values. Default is `NULL`.
 #'
 #' @param method Statistical test used for group comparison. One of
 #'   `"permutation"` or `"t.test"`. Default is `"permutation"`.
@@ -86,11 +84,9 @@ test_hscore_changes <- function(h_tab,
                                 feature_col,
                                 B = 1000,
                                 min_samples = 3,
-                                seed = NULL,
                                 method = c("permutation", "t.test")) {
   method <- match.arg(method)
 
-  if (!is.null(seed)) {set.seed(seed)}
   score_cols <- grep("_(h|mu)$", colnames(h_tab), value = TRUE)
 
   meta_sub <- meta[meta[[group_col]] %in% group_levels,
@@ -198,8 +194,6 @@ test_hscore_changes <- function(h_tab,
 #'   `method = "permutation"`. Default is 1000.
 #' @param min_samples Integer; minimum number of non-missing samples required
 #'   in each group for each feature-trait test. Default is 3.
-#' @param seed Optional integer random seed for reproducible permutation
-#'   p-values. Default is `NULL`.
 #' @param method Statistical test used for group comparison. One of
 #'   `"permutation"` or `"t.test"`. Default is `"permutation"`.
 #'
@@ -215,7 +209,6 @@ test_hscore_changes_all <- function(hscore,
                                     group_levels,
                                     B = 1000,
                                     min_samples = 3,
-                                    seed = NULL,
                                     method = c("permutation", "t.test")) {
   method <- match.arg(method)
 
@@ -228,7 +221,6 @@ test_hscore_changes_all <- function(hscore,
     feature_col = "Peptide",
     B = B,
     min_samples = min_samples,
-    seed = seed,
     method = method
   )
   message("Test heterogeneity change at protein")
@@ -240,7 +232,6 @@ test_hscore_changes_all <- function(hscore,
     feature_col = "Protein",
     B = B,
     min_samples = min_samples,
-    seed = seed,
     method = method
   )
 
@@ -261,9 +252,8 @@ test_hscore_changes_all <- function(hscore,
 #'
 #' The function internally:
 #' \enumerate{
-#'   \item Computes glycan trait scores using \code{\link{compute_hscore}}.
-#'   \item Performs group comparisons using
-#'         \code{\link{test_hscore_changes_all}}.
+#'   \item Computes site- and protein-level glycan heterogeneity scores.
+#'   \item Performs permutation-based or Welch's t-test group comparisons.
 #' }
 #'
 #' @param gpsm A GPSM table imported by
@@ -280,7 +270,6 @@ test_hscore_changes_all <- function(hscore,
 #'   `method = "permutation"`. Default is 1000.
 #' @param min_samples Minimum number of non-missing samples required in each
 #'   group.
-#' @param seed Optional random seed for reproducibility.
 #' @param method Statistical test used for group comparison. One of
 #'   `"permutation"` or `"t.test"`. Default is `"permutation"`.
 #'
@@ -297,8 +286,7 @@ test_hscore_changes_all <- function(hscore,
 #'   meta = meta,
 #'   group_col = "Diagnosis",
 #'   group_levels = c("Normal", "Symptomatic"),
-#'   B = 500,
-#'   seed = 123
+#'   B = 500
 #' )
 #'
 #' head(res)
@@ -312,7 +300,6 @@ analyze_hscore_changes <- function(gpsm,
                                    group_levels,
                                    B = 1000,
                                    min_samples = 3,
-                                   seed = NULL,
                                    method = c("permutation", "t.test")) {
   method <- match.arg(method)
 
@@ -330,7 +317,6 @@ analyze_hscore_changes <- function(gpsm,
     group_levels = group_levels,
     B = B,
     min_samples = min_samples,
-    seed = seed,
     method = method
   )
 

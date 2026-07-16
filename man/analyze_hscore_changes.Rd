@@ -13,7 +13,6 @@ analyze_hscore_changes(
   group_levels,
   B = 1000,
   min_samples = 3,
-  seed = NULL,
   method = c("permutation", "t.test")
 )
 }
@@ -40,8 +39,6 @@ to compare.}
 \item{min_samples}{Minimum number of non-missing samples required in each
 group.}
 
-\item{seed}{Optional random seed for reproducibility.}
-
 \item{method}{Statistical test used for group comparison. One of
 `"permutation"` or `"t.test"`. Default is `"permutation"`.}
 }
@@ -55,9 +52,8 @@ groups.
 
 The function internally:
 \enumerate{
-  \item Computes glycan trait scores using \code{\link{compute_hscore}}.
-  \item Performs group comparisons using
-        \code{\link{test_hscore_changes_all}}.
+  \item Computes site- and protein-level glycan heterogeneity scores.
+  \item Performs permutation-based or Welch's t-test group comparisons.
 }
 }
 \examples{
@@ -70,8 +66,7 @@ res <- analyze_hscore_changes(
   meta = meta,
   group_col = "Diagnosis",
   group_levels = c("Normal", "Symptomatic"),
-  B = 500,
-  seed = 123
+  B = 500
 )
 
 head(res)

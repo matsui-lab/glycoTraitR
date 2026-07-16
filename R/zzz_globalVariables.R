@@ -1,1 +1,13 @@
-utils::globalVariables(c("count", ".data", "glycanDatabase"))
+utils::globalVariables(c(
+  "count",
+  ".data",
+  "glycanDatabase",
+  "trait",
+  "feature",
+  "plot_diff",
+  "sig",
+  "xval",
+  "neg_log10_p",
+  "direction",
+  "feature_label"
+))

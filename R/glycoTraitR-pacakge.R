@@ -2,7 +2,7 @@
 "_PACKAGE"
 
 # Selective imports ----
-#' @importFrom stats median setNames t.test aggregate
+#' @importFrom stats median setNames t.test aggregate ave
 #' @importFrom utils read.delim data
 #' @importFrom pbapply pblapply
 #' @importFrom ggplot2

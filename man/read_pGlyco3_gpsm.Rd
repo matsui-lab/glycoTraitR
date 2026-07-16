@@ -43,20 +43,7 @@ This function takes a pGlyco3 GPSM file as input (typically named
   \item Aggregate rows by \code{Protein}, \code{Peptide},
         \code{GlycanStructure}, and \code{File} as GPSM counts in each group.
 }
-
-The output of this function is typically used as the input for
-\code{\link{build_trait_se}}.
-}
-\examples{
-# Load toy example data included in glycoTraitR
-path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
-  package = "glycoTraitR"
-)
-gpsm <- read_pGlyco3_gpsm(path)
-head(gpsm)
-
 }
 \seealso{
-\code{\link{read_decipher_gpsm}},
-\code{\link{build_trait_se}}
+\code{\link{read_decipher_gpsm}}
 }

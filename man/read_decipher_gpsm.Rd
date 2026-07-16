@@ -22,9 +22,6 @@ combination and the following columns:
   \item \code{File} — raw file name
   \item \code{Count} — spectral count (number of GPSMs) for this combination
 }
-
-The returned table is designed to be passed to
-\code{\link{build_trait_se}} for glycan trait computation.
 }
 \description{
 Read multiple Glyco-Decipher GPSM files from a folder,
@@ -42,13 +39,6 @@ mapped to WURCS structures via the global \code{glycanDatabase} object.
 The final table uses a standardized glycan column name
 \code{GlycanStructure} for compatibility with downstream functions.
 }
-\examples{
-folder <- system.file("extdata", "decipher_toyexample", package = "glycoTraitR")
-gpsm <- read_decipher_gpsm(folder)
-head(gpsm)
-
-}
 \seealso{
-\code{\link{read_pGlyco3_gpsm}},
-\code{\link{build_trait_se}}
+\code{\link{read_pGlyco3_gpsm}}
 }

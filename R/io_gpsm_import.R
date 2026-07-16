@@ -20,8 +20,6 @@
 #'         \code{GlycanStructure}, and \code{File} as GPSM counts in each group.
 #' }
 #'
-#' The output of this function is typically used as the input for
-#' \code{\link{build_trait_se}}.
 #'
 #' @param gpsm_dir The path to the pGlyco3 GPSM output file
 #' (for example, \code{"pGlycoDB-GP-FDR-Pro-Quant-Site.txt"}).
@@ -40,16 +38,8 @@
 #' }
 #'
 #' @seealso
-#' \code{\link{read_decipher_gpsm}},
-#' \code{\link{build_trait_se}}
+#' \code{\link{read_decipher_gpsm}}
 #'
-#' @examples
-#' # Load toy example data included in glycoTraitR
-#' path <- system.file("extdata", "pGlyco3_gpsm_toyexample.txt",
-#'   package = "glycoTraitR"
-#' )
-#' gpsm <- read_pGlyco3_gpsm(path)
-#' head(gpsm)
 #'
 #' @export
 read_pGlyco3_gpsm <- function(gpsm_dir) {
@@ -105,18 +95,10 @@ read_pGlyco3_gpsm <- function(gpsm_dir) {
 #'   \item \code{Count} — spectral count (number of GPSMs) for this combination
 #' }
 #'
-#' The returned table is designed to be passed to
-#' \code{\link{build_trait_se}} for glycan trait computation.
-#'
 #'
 #' @seealso
-#' \code{\link{read_pGlyco3_gpsm}},
-#' \code{\link{build_trait_se}}
+#' \code{\link{read_pGlyco3_gpsm}}
 #'
-#' @examples
-#' folder <- system.file("extdata", "decipher_toyexample", package = "glycoTraitR")
-#' gpsm <- read_decipher_gpsm(folder)
-#' head(gpsm)
 #'
 #' @export
 read_decipher_gpsm <- function(gpsm_folder_dir) {

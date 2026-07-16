@@ -59,6 +59,21 @@ plot_glycan_tree <- function(g) {
 #' when both are available. If either level is absent, only the available panels
 #' are shown.
 #'
+#' @examples
+#' gpsm <- readRDS(system.file("extdata", "gpsm_toyexample.rds", package = "glycoTraitR"))
+#' meta <- readRDS(system.file("extdata", "meta_toyexample.rds", package = "glycoTraitR"))
+#'
+#' res <- analyze_hscore_changes(
+#'   gpsm = gpsm,
+#'   from = "pGlyco3",
+#'   meta = meta,
+#'   group_col = "Diagnosis",
+#'   group_levels = c("Normal", "Symptomatic"),
+#'   B = 500
+#' )
+#'
+#' plot_hscore_heatmap(res)
+#'
 #' @export
 plot_hscore_heatmap <- function(res, p_cutoff = 0.05) {
 
@@ -343,6 +358,21 @@ plot_hscore_heatmap <- function(res, p_cutoff = 0.05) {
 #' @return A \code{ggplot2}/\code{patchwork} object. The x-axis shows group
 #'   difference, the y-axis shows `-log10(p-value)`, and colors indicate
 #'   significance and direction of change.
+#'
+#' @examples
+#' gpsm <- readRDS(system.file("extdata", "gpsm_toyexample.rds", package = "glycoTraitR"))
+#' meta <- readRDS(system.file("extdata", "meta_toyexample.rds", package = "glycoTraitR"))
+#'
+#' res <- analyze_hscore_changes(
+#'   gpsm = gpsm,
+#'   from = "pGlyco3",
+#'   meta = meta,
+#'   group_col = "Diagnosis",
+#'   group_levels = c("Normal", "Symptomatic"),
+#'   B = 500
+#' )
+#'
+#' plot_hscore_volcano(res)
 #'
 #' @export
 plot_hscore_volcano <- function(res,

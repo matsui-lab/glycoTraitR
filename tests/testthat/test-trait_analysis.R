@@ -1,80 +1,72 @@
-testthat::test_that("analyze_trait_changes", {
-  testthat::skip_if_not_installed("SummarizedExperiment")
-  testthat::skip_if_not_installed("pbapply")
-  testthat::skip_if_not_installed("car")
+testthat::test_that("analyze_hscore_changes is reproducible and respects group order", {
+  gpsm <- readRDS(system.file(
+    "extdata",
+    "gpsm_toyexample.rds",
+    package = "glycoTraitR"
+  ))
 
-  # silence pbapply progress bar in tests
-  if (requireNamespace("pbapply", quietly = TRUE)) {
-    old_pb <- pbapply::pboptions(type = "none")
-    on.exit(pbapply::pboptions(old_pb), add = TRUE)
-  }
+  meta <- readRDS(system.file(
+    "extdata",
+    "meta_toyexample.rds",
+    package = "glycoTraitR"
+  ))
 
-  # -----------------------------
-  # Construct a minimal SE object
-  # -----------------------------
-  # 6 samples, 2 groups (A/B), 2 levels (rows), 2 traits (assays)
-  samples <- paste0("s", 1:6)
-  grp <- factor(c("A", "A", "A", "B", "B", "B"), levels = c("A", "B"))
-  coldata <- data.frame(grp = grp, row.names = samples)
+  old_pb <- pbapply::pboptions(type = "none")
+  on.exit(pbapply::pboptions(old_pb), add = TRUE)
 
-  rowdata <- data.frame(level = c("L1", "L2"), row.names = c("L1", "L2"))
-
-  # Trait 1 matrix
-  # Row L1: strong group difference, includes one NA to hit NA-filter path
-  # Row L2: all zeros -> should be skipped by all(value_x == 0)
-  trait1 <- matrix(
-    c(
-      10, 11, NA, 1, 2, 3, # L1
-      0, 0, 0, 0, 0, 0 # L2 (all-zero)
-    ),
-    nrow = 2, byrow = TRUE,
-    dimnames = list(c("L1", "L2"), samples)
+  res_ab_1 <- analyze_hscore_changes(
+    gpsm = gpsm,
+    from = "pGlyco3",
+    motifs = NULL,
+    meta = meta,
+    group_col = "Diagnosis",
+    group_levels = c("Normal", "Symptomatic"),
+    B = 10,
+    min_samples = 3,
+    seed = 123
   )
 
-  # Trait 2 matrix
-  # Row L1: similar distributions -> not significant -> should return NULL (else branch)
-  # Row L2: group B has < min_psm non-NA -> should be skipped by min_psm check
-  trait2 <- matrix(
-    c(
-      5, 5, 6, 5, 6, 5, # L1 (non-significant but non-constant)
-      1, 1, 1, NA, NA, 2 # L2 (B has only 1 non-NA if min_psm=2)
-    ),
-    nrow = 2, byrow = TRUE,
-    dimnames = list(c("L1", "L2"), samples)
+  res_ab_2 <- analyze_hscore_changes(
+    gpsm = gpsm,
+    from = "pGlyco3",
+    motifs = NULL,
+    meta = meta,
+    group_col = "Diagnosis",
+    group_levels = c("Normal", "Symptomatic"),
+    B = 10,
+    min_samples = 3,
+    seed = 123
   )
 
-  se <- SummarizedExperiment::SummarizedExperiment(
-    assays  = list(trait1 = trait1, trait2 = trait2),
-    rowData = rowdata,
-    colData = coldata
+  testthat::expect_equal(res_ab_1, res_ab_2)
+
+  res_ba <- analyze_hscore_changes(
+    gpsm = gpsm,
+    from = "pGlyco3",
+    motifs = NULL,
+    meta = meta,
+    group_col = "Diagnosis",
+    group_levels = c("Symptomatic", "Normal"),
+    B = 10,
+    min_samples = 3,
+    seed = 123
   )
 
-  # ---------------------------------------
-  # 1) group_col missing -> stop() branch
-  # ---------------------------------------
-  testthat::expect_error(
-    analyze_trait_changes(se, group_col = "BADCOL", group_levels = c("A", "B"), min_psm = 2),
-    "was not found in colData"
+  key <- c("trait", "score_type", "feature", "level")
+
+  ab <- res_ab_1[, c(key, "diff")]
+  ba <- res_ba[, c(key, "diff")]
+
+  names(ab)[names(ab) == "diff"] <- "diff_ab"
+  names(ba)[names(ba) == "diff"] <- "diff_ba"
+
+  paired <- merge(ab, ba, by = key)
+
+  testthat::expect_gt(nrow(paired), 0L)
+
+  testthat::expect_equal(
+    paired$diff_ab,
+    -paired$diff_ba,
+    tolerance = 1e-10
   )
-
-  # ----------------------------------------------------
-  # 2) main run: hits all internal return(NULL) branches
-  # ----------------------------------------------------
-  res <- analyze_trait_changes(se, group_col = "grp", group_levels = c("A", "B"), min_psm = 2)
-
-  # Expect at least one significant result (trait1 at L1)
-  testthat::expect_s3_class(res, "data.frame")
-  testthat::expect_true(nrow(res) >= 1)
-
-  # check required columns
-  testthat::expect_true(all(c("trait", "level", "l_pval", "f_val", "t_pval", "t_val") %in% names(res)))
-
-  # The only expected significant row is trait1 at L1 (others are skipped or non-significant)
-  testthat::expect_true(any(res$trait == "trait1" & res$level == "L1"))
-
-  # sanity: p-values are numeric and finite for returned rows
-  testthat::expect_type(res$l_pval, "double")
-  testthat::expect_type(res$t_pval, "double")
-  testthat::expect_true(all(is.finite(res$l_pval)))
-  testthat::expect_true(all(is.finite(res$t_pval)))
 })
