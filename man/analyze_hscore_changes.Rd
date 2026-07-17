@@ -66,7 +66,7 @@ res <- analyze_hscore_changes(
   meta = meta,
   group_col = "Diagnosis",
   group_levels = c("Normal", "Symptomatic"),
-  B = 500
+  B = 5
 )
 
 head(res)

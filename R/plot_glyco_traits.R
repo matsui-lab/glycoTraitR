@@ -60,18 +60,7 @@ plot_glycan_tree <- function(g) {
 #' are shown.
 #'
 #' @examples
-#' gpsm <- readRDS(system.file("extdata", "gpsm_toyexample.rds", package = "glycoTraitR"))
-#' meta <- readRDS(system.file("extdata", "meta_toyexample.rds", package = "glycoTraitR"))
-#'
-#' res <- analyze_hscore_changes(
-#'   gpsm = gpsm,
-#'   from = "pGlyco3",
-#'   meta = meta,
-#'   group_col = "Diagnosis",
-#'   group_levels = c("Normal", "Symptomatic"),
-#'   B = 500
-#' )
-#'
+#' res <- readRDS(system.file("extdata", "output_toyexample.rds", package = "glycoTraitR"))
 #' plot_hscore_heatmap(res)
 #'
 #' @export
@@ -247,7 +236,7 @@ plot_hscore_heatmap <- function(res, p_cutoff = 0.05) {
     show_legend = has_protein_mu,
     show_x_text = FALSE,
     show_y_axis = TRUE,
-    panel_title = if (mu_title_on_protein) "Mean trait abundance (\u03bc)" else NULL,
+    panel_title = if (mu_title_on_protein) "Mean trait abundance (mu)" else NULL,
     y_title = "Protein level"
   )
 
@@ -270,7 +259,7 @@ plot_hscore_heatmap <- function(res, p_cutoff = 0.05) {
     show_x_text = TRUE,
     show_y_axis = TRUE,
     panel_title = if (!has_protein_mu && has_site_mu) {
-      "Mean trait abundance (\u03bc)"
+      "Mean trait abundance (mu)"
     } else {
       NULL
     },
@@ -360,18 +349,7 @@ plot_hscore_heatmap <- function(res, p_cutoff = 0.05) {
 #'   significance and direction of change.
 #'
 #' @examples
-#' gpsm <- readRDS(system.file("extdata", "gpsm_toyexample.rds", package = "glycoTraitR"))
-#' meta <- readRDS(system.file("extdata", "meta_toyexample.rds", package = "glycoTraitR"))
-#'
-#' res <- analyze_hscore_changes(
-#'   gpsm = gpsm,
-#'   from = "pGlyco3",
-#'   meta = meta,
-#'   group_col = "Diagnosis",
-#'   group_levels = c("Normal", "Symptomatic"),
-#'   B = 500
-#' )
-#'
+#' res <- readRDS(system.file("extdata", "output_toyexample.rds", package = "glycoTraitR"))
 #' plot_hscore_volcano(res)
 #'
 #' @export
@@ -560,7 +538,7 @@ plot_hscore_volcano <- function(res,
     show_legend = has_protein_mu,
     show_x_text = TRUE,
     show_y_axis = TRUE,
-    panel_title = if (has_protein_mu) "Mean trait abundance (\u03bc)" else NULL,
+    panel_title = if (has_protein_mu) "Mean trait abundance (mu)" else NULL,
     y_title = "Protein level"
   )
 
@@ -581,7 +559,7 @@ plot_hscore_volcano <- function(res,
     show_x_text = TRUE,
     show_y_axis = TRUE,
     panel_title = if (!has_protein_mu && has_site_mu) {
-      "Mean trait abundance (\u03bc)"
+      "Mean trait abundance (mu)"
     } else {
       NULL
     },

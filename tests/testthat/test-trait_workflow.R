@@ -20,8 +20,7 @@ test_that("analyze_hscore_changes runs successfully", {
     group_col = "Diagnosis",
     group_levels = c("Normal", "Symptomatic"),
     B = 10,
-    min_samples = 3,
-    seed = 123
+    min_samples = 3
   )
 
   ## returns

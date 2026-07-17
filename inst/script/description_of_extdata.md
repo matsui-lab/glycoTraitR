@@ -49,4 +49,6 @@ first imported using the corresponding GlycoTraitR reader function and
 then saved as the processed R object `gpsm_toyexample.rds`. This object
 is provided as package data and can be used directly in the downstream
 analysis without repeating the file-import step. The corresponding meta
-`meta_toyexample.rds` is also provided together.
+`meta_toyexample.rds` is also provided together. Meanwhile,
+`output_toyexample.rds` is provided as an example input for plot
+functions.

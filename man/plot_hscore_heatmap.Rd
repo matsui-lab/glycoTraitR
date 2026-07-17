@@ -28,18 +28,7 @@ when both are available. If either level is absent, only the available panels
 are shown.
 }
 \examples{
-gpsm <- readRDS(system.file("extdata", "gpsm_toyexample.rds", package = "glycoTraitR"))
-meta <- readRDS(system.file("extdata", "meta_toyexample.rds", package = "glycoTraitR"))
-
-res <- analyze_hscore_changes(
-  gpsm = gpsm,
-  from = "pGlyco3",
-  meta = meta,
-  group_col = "Diagnosis",
-  group_levels = c("Normal", "Symptomatic"),
-  B = 500
-)
-
+res <- readRDS(system.file("extdata", "output_toyexample.rds", package = "glycoTraitR"))
 plot_hscore_heatmap(res)
 
 }

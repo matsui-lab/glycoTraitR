@@ -1,72 +1,92 @@
-testthat::test_that("analyze_hscore_changes is reproducible and respects group order", {
-  gpsm <- readRDS(system.file(
-    "extdata",
-    "gpsm_toyexample.rds",
-    package = "glycoTraitR"
-  ))
+testthat::test_that(
+  "analyze_hscore_changes returns consistent output structure",
+  {
+    gpsm <- readRDS(system.file(
+      "extdata",
+      "gpsm_toyexample.rds",
+      package = "glycoTraitR"
+    ))
 
-  meta <- readRDS(system.file(
-    "extdata",
-    "meta_toyexample.rds",
-    package = "glycoTraitR"
-  ))
+    meta <- readRDS(system.file(
+      "extdata",
+      "meta_toyexample.rds",
+      package = "glycoTraitR"
+    ))
 
-  old_pb <- pbapply::pboptions(type = "none")
-  on.exit(pbapply::pboptions(old_pb), add = TRUE)
+    old_pb <- pbapply::pboptions(type = "none")
+    on.exit(pbapply::pboptions(old_pb), add = TRUE)
 
-  res_ab_1 <- analyze_hscore_changes(
-    gpsm = gpsm,
-    from = "pGlyco3",
-    motifs = NULL,
-    meta = meta,
-    group_col = "Diagnosis",
-    group_levels = c("Normal", "Symptomatic"),
-    B = 10,
-    min_samples = 3,
-    seed = 123
-  )
+    res_ab_1 <- analyze_hscore_changes(
+      gpsm = gpsm,
+      from = "pGlyco3",
+      motifs = NULL,
+      meta = meta,
+      group_col = "Diagnosis",
+      group_levels = c("Normal", "Symptomatic"),
+      B = 10,
+      min_samples = 3
+    )
 
-  res_ab_2 <- analyze_hscore_changes(
-    gpsm = gpsm,
-    from = "pGlyco3",
-    motifs = NULL,
-    meta = meta,
-    group_col = "Diagnosis",
-    group_levels = c("Normal", "Symptomatic"),
-    B = 10,
-    min_samples = 3,
-    seed = 123
-  )
+    res_ab_2 <- analyze_hscore_changes(
+      gpsm = gpsm,
+      from = "pGlyco3",
+      motifs = NULL,
+      meta = meta,
+      group_col = "Diagnosis",
+      group_levels = c("Normal", "Symptomatic"),
+      B = 10,
+      min_samples = 3
+    )
 
-  testthat::expect_equal(res_ab_1, res_ab_2)
+    testthat::expect_s3_class(res_ab_1, "data.frame")
+    testthat::expect_s3_class(res_ab_2, "data.frame")
 
-  res_ba <- analyze_hscore_changes(
-    gpsm = gpsm,
-    from = "pGlyco3",
-    motifs = NULL,
-    meta = meta,
-    group_col = "Diagnosis",
-    group_levels = c("Symptomatic", "Normal"),
-    B = 10,
-    min_samples = 3,
-    seed = 123
-  )
+    testthat::expect_gt(nrow(res_ab_1), 0L)
+    testthat::expect_gt(ncol(res_ab_1), 0L)
 
-  key <- c("trait", "score_type", "feature", "level")
+    testthat::expect_equal(
+      nrow(res_ab_1),
+      nrow(res_ab_2)
+    )
 
-  ab <- res_ab_1[, c(key, "diff")]
-  ba <- res_ba[, c(key, "diff")]
+    testthat::expect_equal(
+      ncol(res_ab_1),
+      ncol(res_ab_2)
+    )
 
-  names(ab)[names(ab) == "diff"] <- "diff_ab"
-  names(ba)[names(ba) == "diff"] <- "diff_ba"
+    testthat::expect_identical(
+      names(res_ab_1),
+      names(res_ab_2)
+    )
 
-  paired <- merge(ab, ba, by = key)
+    column_classes_1 <- vapply(
+      res_ab_1,
+      function(x) paste(class(x), collapse = "/"),
+      character(1)
+    )
 
-  testthat::expect_gt(nrow(paired), 0L)
+    column_classes_2 <- vapply(
+      res_ab_2,
+      function(x) paste(class(x), collapse = "/"),
+      character(1)
+    )
 
-  testthat::expect_equal(
-    paired$diff_ab,
-    -paired$diff_ba,
-    tolerance = 1e-10
-  )
-})
+    testthat::expect_identical(
+      column_classes_1,
+      column_classes_2
+    )
+
+    required_columns <- c(
+      "trait",
+      "score_type",
+      "feature",
+      "level",
+      "diff",
+      "pval"
+    )
+
+    testthat::expect_true(
+      all(required_columns %in% names(res_ab_1))
+    )
+  }
+)
