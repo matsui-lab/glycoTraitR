@@ -19,7 +19,7 @@ glycan structures (WURCS 2.0)."><meta property="og:image" content="/logo.png"><!
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">glycoTraitR</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.99.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.1.1</span>
       </span>
     </div>
 
@@ -79,9 +79,7 @@ combination and the following columns:</p>
 <li><p><code>GlycanStructure</code> — glycan structural annotation (WURCS 2.0)</p></li>
 <li><p><code>File</code> — raw file name</p></li>
 <li><p><code>Count</code> — spectral count (number of GPSMs) for this combination</p></li>
-</ul><p>The returned table is designed to be passed to
-<code><a href="build_trait_se.html">build_trait_se</a></code> for glycan trait computation.</p>
-    </div>
+</ul></div>
     <div id="details">
     <h2>Details</h2>
     <p>This function assumes that the input folder contains one or more
@@ -96,39 +94,9 @@ The final table uses a standardized glycan column name
     </div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p><code><a href="read_pGlyco3_gpsm.html">read_pGlyco3_gpsm</a></code>,
-<code><a href="build_trait_se.html">build_trait_se</a></code></p></div>
+    <div class="dont-index"><p><code><a href="read_pGlyco3_gpsm.html">read_pGlyco3_gpsm</a></code></p></div>
     </div>
 
-    <div id="ref-examples">
-    <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">folder</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"decipher_toyexample"</span>, package <span class="op">=</span> <span class="st">"glycoTraitR"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">gpsm</span> <span class="op">&lt;-</span> <span class="fu">read_decipher_gpsm</span><span class="op">(</span><span class="va">folder</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">gpsm</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       Protein       Peptide</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 A1AG1|A1AG2        NEEYNK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2        NPTN      ANATIEVK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3       NRCAM    FNHTQTIQQK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4       NTRK2 HMNETSHTQGSLR</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5       CNTN2     NESAVTGYK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6        GRM2     NICVATSEK</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                                                                                           GlycanStructure</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 WURCS=2.0/6,14,13/[a2122h-1x_1-5_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5][a2112h-1b_1-5][Aad21122h-2a_2-6_5*NCC/3=O]/1-2-3-4-2-5-6-2-5-6-6-4-2-5/a4-b1_b4-c1_c3-d1_c6-l1_d2-e1_d4-h1_e4-f1_f6-g2_h3-i1_h6-k2_i3-j2_l2-m1_m4-n1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                                                       WURCS=2.0/4,7,6/[u2122h_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5]/1-2-3-4-4-4-4/c3-d1_c6-e1_e3-f1_f2-g1_b1-a3|a4_c1-b3|b4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                                                                       WURCS=2.0/4,7,6/[u2122h_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5]/1-2-3-4-4-4-4/c3-d1_c6-e1_e3-f1_f2-g1_b1-a3|a4_c1-b3|b4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                                                                                       WURCS=2.0/4,7,6/[u2122h_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5]/1-2-3-4-4-4-4/c3-d1_c6-e1_e3-f1_f2-g1_b1-a3|a4_c1-b3|b4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                                                                                                       WURCS=2.0/4,7,6/[u2122h_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5]/1-2-3-4-4-4-4/c3-d1_c6-e1_e3-f1_f2-g1_b1-a3|a4_c1-b3|b4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                                                                       WURCS=2.0/4,7,6/[u2122h_2*NCC/3=O][a2122h-1b_1-5_2*NCC/3=O][a1122h-1b_1-5][a1122h-1a_1-5]/1-2-3-4-4-4-4/c3-d1_c6-e1_e3-f1_f2-g1_b1-a3|a4_c1-b3|b4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                        File Count</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 KS_AD1_HILIC-elu_870_3584     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 KS_AD1_HILIC-elu_870_3584     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 KS_AD1_HILIC-elu_870_3584     2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4 KS_AD1_HILIC-elu_870_3584     5</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5 KS_AD1_HILIC-elu_870_3584     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6 KS_AD1_HILIC-elu_870_3584     2</span>
-<span class="r-in"><span></span></span>
-</code></pre></div>
-    </div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top"><h2 data-toc-skip>Contents</h2>
